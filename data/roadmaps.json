@@ -1,0 +1,54 @@
+[
+  {
+    "id": "software-engineer",
+    "title_ar": "مهندس برمجيات",
+    "title_en": "Software Engineer",
+    "icon": "fa-code",
+    "color": "#4CAF50",
+    "description_ar": "تعلم تطوير التطبيقات والأنظمة البرمجية",
+    "description_en": "Learn to develop applications and software systems",
+    "display_order": 1,
+    "steps": [
+      {
+        "phase": 1,
+        "title_ar": "أساسيات البرمجة",
+        "title_en": "Programming Fundamentals",
+        "skills": [
+          { "name_ar": "لغة برمجة (Python/JavaScript)", "name_en": "Programming Language (Python/JavaScript)", "required": true },
+          { "name_ar": "هياكل البيانات", "name_en": "Data Structures", "required": true },
+          { "name_ar": "الخوارزميات", "name_en": "Algorithms", "required": true }
+        ]
+      },
+      {
+        "phase": 2,
+        "title_ar": "تطوير الويب",
+        "title_en": "Web Development",
+        "skills": [
+          { "name_ar": "HTML/CSS", "name_en": "HTML/CSS", "required": true },
+          { "name_ar": "JavaScript", "name_en": "JavaScript", "required": true },
+          { "name_ar": "React أو Vue", "name_en": "React or Vue", "required": false }
+        ]
+      },
+      {
+        "phase": 3,
+        "title_ar": "قواعد البيانات",
+        "title_en": "Databases",
+        "skills": [
+          { "name_ar": "SQL", "name_en": "SQL", "required": true },
+          { "name_ar": "MongoDB", "name_en": "MongoDB", "required": false },
+          { "name_ar": "تصميم قواعد البيانات", "name_en": "Database Design", "required": true }
+        ]
+      },
+      {
+        "phase": 4,
+        "title_ar": "أدوات ومشاريع",
+        "title_en": "Tools & Projects",
+        "skills": [
+          { "name_ar": "Git/GitHub", "name_en": "Git/GitHub", "required": true },
+          { "name_ar": "APIs", "name_en": "APIs", "required": true },
+          { "name_ar": "بناء 3-5 مشاريع برمجية كاملة", "name_en": "Build 3–5 complete software projects", "required": true }
+        ]
+      }
+    ]
+  }
+]

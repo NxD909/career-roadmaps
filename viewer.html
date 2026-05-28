@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PDF Viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="miniapps.css">
+    <link href="css/all.min.css" rel="stylesheet">
+    <script src="twkhelper/twkhelper.js"></script>
+    <script src="constants.js"></script>
+    <script src="js/pdf.min.js"></script>
+
+    <style>
+        @font-face {
+            font-family: 'Cairo';
+            src: url('fonts/Cairo-Regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        :root {
+            --bg-color: #f5f9f5;
+            --text-color: #1a2a6c;
+            --card-bg: #ffffff;
+            --sidebar-bg: #f8f9fa;
+            --primary-color: #2e408d;
+            --primary-hover: #1b2a6b;
+            --separator-color: #dee2e6;
+            --dark-bg: #1a1a1a;
+            --dark-card-bg: black;
+            --dark-text: #e6e6e6;
+            --dark-primary: #4da8ff;
+            --base-font-size: 14px;
+            --base-icon-size: 1rem;
+            --size-scale: 1;
+            --animation-duration: 0.3s;
+            --sidebar-width: 250px;
+            --sidebar-width-mobile: 200px;
+        }
+
+        * {
+            font-family: 'Cairo', sans-serif;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-size: calc(var(--base-font-size) * var(--size-scale));
+            transition: font-size var(--animation-duration) ease, color var(--animation-duration) ease;
+            color: var(--text-color);
+        }
+
+        i, .fas, .far {
+            font-size: calc(var(--base-icon-size) * var(--size-scale));
+            color: white;
+        }
+
+        .grayscale-mode i,.grayscale-mode i .fas,.grayscale-mode i .far {
+            font-size: calc(var(--base-icon-size) * var(--size-scale));
+            color: gray;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            line-height: 1.6;
+            transition: background-color var(--animation-duration) ease, color var(--animation-duration) ease;
+            opacity: 0;
+            animation: fadeIn var(--animation-duration) ease forwards;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        body[dir="rtl"] * {
+            text-align: right !important;
+        }
+
+        body[dir="ltr"] * {
+            text-align: left !important;
+        }
+
+        button {
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform var(--animation-duration) ease, background-color var(--animation-duration) ease, color var(--animation-duration) ease;
+            color: var(--text-color);
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        #loader-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(24, 20, 20, 0.62);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(1px);
+            animation: fadeIn var(--animation-duration) ease;
+        }
+
+        .spinner {
+            width: 80px;
+            height: 80px;
+            border: 9px solid #f7ebeb;
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--sidebar-bg);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            right: calc(-1 * var(--sidebar-width));
+            transition: right var(--animation-duration) ease;
+            z-index: 1040;
+            padding-top: calc(60px + env(safe-area-inset-top));
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+
+        body[dir="rtl"] .sidebar {
+            right: unset;
+            left: calc(-1 * var(--sidebar-width));
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            transition: left var(--animation-duration) ease;
+        }
+
+        .sidebar.active {
+            right: 0;
+        }
+
+        body[dir="rtl"] .sidebar.active {
+            left: 0;
+            right: unset;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar ul li {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--separator-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: background-color var(--animation-duration) ease, color var(--animation-duration) ease, transform 0.2s ease;
+            color: var(--text-color);
+        }
+
+        .sidebar ul li:hover,
+        .sidebar ul li:focus {
+            background-color: #e6f0fa;
+            color: var(--primary-color);
+            transform: translateX(5px);
+            outline: none;
+        }
+
+        body[dir="rtl"] .sidebar ul li:hover,
+        body[dir="rtl"] .sidebar ul li:focus {
+            transform: translateX(-5px);
+        }
+
+        .sidebar ul li.active {
+            background-color: #d0e4ff;
+            color: var(--primary-color);
+        }
+
+        .sidebar ul li i {
+            margin-right: 10px;
+            font-size: calc(1.2rem * var(--size-scale));
+            width: 20px;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        body[dir="rtl"] .sidebar ul li i {
+            margin-right: 0;
+            margin-left: 10px;
+        }
+
+        .toggle-btn {
+            background: var(--sidebar-bg);
+            border: 1px solid var(--separator-color);
+            font-size: calc(24px * var(--size-scale));
+            color: var(--text-color);
+            padding: 8px 12px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle-btn:hover {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            transform: scale(1.1);
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1030;
+            display: none;
+            opacity: 0;
+            transition: opacity var(--animation-duration) ease;
+        }
+
+        .overlay.active {
+            display: block;
+            opacity: 1;
+            animation: fadeIn var(--animation-duration) ease;
+        }
+
+        .grayscale-mode {
+            --bg-color: #e8ecef;
+            --text-color: #333333;
+            --card-bg: # Explained from previous code
+            --sidebar-bg: #d3d3d3;
+            --primary-color: #555555;
+            --primary-hover: #333333;
+            --separator-color: #a0a0a0;
+        }
+
+        .grayscale-mode .pdf-page {
+            filter: grayscale(100%);
+            background-color: #ffffff;
+        }
+
+        .grayscale-mode .card,
+        .grayscale-mode .fixed-title,
+        .grayscale-mode .header-container,
+        .grayscale-mode footer {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .grayscale-mode .btn-outline-primary,
+        .grayscale-mode .sidebar ul li,
+        .grayscale-mode .fixed-title button,
+        .grayscale-mode footer p span {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .grayscale-mode .btn-outline-primary:hover,
+        .grayscale-mode .sidebar ul li:hover,
+        .grayscale-mode .sidebar ul li:focus,
+        .grayscale-mode .fixed-title button:hover {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+
+        .grayscale-mode .toggle-btn {
+            background-color: var(--sidebar-bg);
+            color: var(--primary-color);
+            border-color: var(--separator-color);
+        }
+
+        .grayscale-mode #title {
+            color: #000000;
+        }
+
+        .light-mode {
+            --bg-color: #f5f9f5;
+            --text-color: #1a2a6c;
+            --card-bg: #ffffff;
+            --sidebar-bg: #f8f9fa;
+            --primary-color: #2e408d;
+            --primary-hover: #1b2a6b;
+            --separator-color: #dee2e6;
+        }
+
+        .light-mode .pdf-page {
+            background-color: #ffffff;
+        }
+
+        .light-mode .card,
+        .light-mode .fixed-title,
+        .light-mode .header-container,
+        .light-mode footer {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        /*.light-mode .btn-outline-primary,
+        .light-mode .sidebar ul li,
+        .light-mode .fixed-title button,
+        .light-mode footer p span {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }*/
+
+        /*.light-mode .btn-outline-primary:hover,
+        .light-mode .sidebar ul li:hover,
+        .light-mode .sidebar ul li:focus,
+        .light-mode .fixed-title button:hover {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }*/
+
+        /*.light-mode .toggle-btn {
+            background-color: var(--sidebar-bg);
+            color: var(--primary-color);
+            border-color: var(--separator-color);
+        }*/
+
+        .light-mode #title {
+            color: #ffffff;
+        }
+
+        .dark-mode {
+            --bg-color: #1a1a1a;
+            --text-color: #e6e6e6;
+            --card-bg: black;
+            --sidebar-bg: #2d2d2d;
+            --primary-color: #4da8ff;
+            --primary-hover: #2a6ed1;
+            --separator-color: #4a4a4a;
+        }
+
+        .dark-mode .card,
+        .dark-mode .fixed-title {
+            background-color: var(--dark-card-bg);
+            color: var(--dark-text);
+        }
+
+        .dark-mode .header-container,
+        .dark-mode footer {
+            background-color: #2c396c;
+            color: #ffffff;
+        }
+
+        .dark-mode #title,
+        .dark-mode .fixed-title span,
+        .dark-mode footer p,
+        .dark-mode footer p span {
+            color: #ffffff;
+        }
+
+        .dark-mode .btn-outline-primary,
+        .dark-mode .sidebar ul li,
+        .dark-mode .fixed-title button {
+            color: var(--dark-primary);
+            border-color: var(--dark-primary);
+        }
+
+        .dark-mode .btn-outline-primary:hover,
+        .dark-mode .sidebar ul li:hover,
+        .dark-mode .sidebar ul li:focus,
+        .dark-mode .fixed-title button:hover {
+            background-color: var(--dark-primary);
+            color: var(--dark-text);
+        }
+
+        .dark-mode .alert-danger {
+            background-color: #c62828;
+            color: var(--dark-text);
+        }
+
+        /*.dark-mode .toggle-btn {
+            background-color: var(--dark-card-bg);
+            color: var(--dark-primary);
+            border-color: var(--dark-primary);
+        }*/
+
+        .dark-mode .pdf-page {
+            background-color: #000000;
+        }
+
+        .light-mode .header-container,.header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 15px;
+            background: #2c396c;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: env(safe-area-inset-top);
+            z-index: 10;
+        }
+
+        body[dir="rtl"] .header-container {
+            flex-direction: row-reverse;
+        }
+
+        #title {
+            font-size: calc(1.2rem * var(--size-scale));
+            font-weight: 700;
+            line-height: 1.4;
+            text-align: center;
+            color: #ffffff;
+            flex-grow: 1;
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .header-container button ,.header-container button {
+            padding: 8px 12px;
+            font-size: calc(14px * var(--size-scale));
+            border-radius: 5px;
+            border: 1px solid #ffffff;
+            background-color: transparent;
+            color: var(--text-color);
+        }
+
+        .grayscale-mode .header-container button {
+            padding: 8px 12px;
+            font-size: calc(14px * var(--size-scale));
+            border-radius: 5px;
+            border: 1px solid gray;
+            background-color: transparent;
+            color: #e6e6e6;
+        }
+
+        .header-container button:hover {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+
+        .light-mode footer, footer {
+            background-color: #2c396c;
+            color: #ffffff;
+            padding: 1rem;
+            border-top: 1px solid var(--separator-color);
+            font-size: calc(14px * var(--size-scale));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        footer p {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        footer p span {
+            color: #ffffff;
+        }
+
+        main.container {
+            flex: 1;
+            transition: margin-right var(--animation-duration) ease, margin-left var(--animation-duration) ease;
+        }
+
+        body[dir="ltr"] .sidebar-active main.container {
+            margin-right: var(--sidebar-width);
+        }
+
+        body[dir="rtl"] .sidebar-active main.container {
+            margin-left: var(--sidebar-width);
+        }
+
+        #pdf-viewer {
+            padding: 1rem;
+        }
+
+        .pdf-page {
+            margin: 0 auto 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            background-color: #ffffff;
+        }
+
+        @media (max-width: 576px) {
+            :root {
+                --sidebar-width: var(--sidebar-width-mobile);
+            }
+
+            .sidebar {
+                width: var(--sidebar-width-mobile);
+                right: calc(-1 * var(--sidebar-width-mobile));
+            }
+
+            body[dir="rtl"] .sidebar {
+                left: calc(-1 * var(--sidebar-width-mobile));
+            }
+
+            .sidebar.active {
+                right: 0;
+            }
+
+            body[dir="rtl"] .sidebar.active {
+                left: 0;
+                right: unset;
+            }
+
+            body[dir="ltr"] .sidebar-active main.container {
+                margin-right: var(--sidebar-width-mobile);
+            }
+
+            body[dir="rtl"] .sidebar-active main.container {
+                margin-left: var(--sidebar-width-mobile);
+            }
+
+            .header-container {
+                gap: 5px;
+                padding: 5px 10px;
+            }
+
+            atino
+            .toggle-btn, .back-btn, .share-btn {
+                padding: 6px 10px;
+                font-size: calc(12px * var(--size-scale));
+            }
+
+            footer {
+                font-size: calc(12px * var(--size-scale));
+                padding: 0.75rem;
+            }
+
+            #title {
+                font-size: calc(1rem * var(--size-scale));
+            }
+        }
+    </style>
+</head>
+<body class="bg-light">
+<div class="header-container">
+    <button class="back-btn" onclick="goBack()" aria-label="Go Back"><i class="fas fa-arrow-left"></i></button>
+    <h2 id="title" class="text-center mb-1"></h2>
+    <button class="share-btn" onclick="shareFile()" aria-label="Share PDF" title="Share"><i class="fas fa-share"></i></button>
+    <button class="toggle-btn" onclick="toggleSidebar()" aria-label="Toggle Sidebar"><i class="fa-solid fa-ellipsis"></i></button>
+</div>
+<div class="sidebar" id="sidebar" tabindex="-1">
+    <ul>
+        <li id="mode-default" tabindex="0" onclick="setMode('default')" onkeydown="handleKeydown(event, 'default')" aria-label="Default Mode">
+            <i class="fas fa-home"></i> <span></span>
+        </li>
+        <li id="mode-grayscale" tabindex="0" onclick="setMode('grayscale')" onkeydown="handleKeydown(event, 'grayscale')" aria-label="Grayscale Mode">
+            <i class="fas fa-adjust"></i> <span></span>
+        </li>
+        <li id="mode-light" tabindex="0" onclick="setMode('light')" onkeydown="handleKeydown(event, 'light')" aria-label="Light Mode">
+            <i class="fas fa-sun"></i> <span></span>
+        </li>
+        <li id="mode-dark" tabindex="0" onclick="setMode('dark')" onkeydown="handleKeydown(event, 'dark')" aria-label="Dark Mode">
+            <i class="fas fa-moon"></i> <span></span>
+        </li>
+        <li id="language-switcher" tabindex="0" onclick="toggleLanguage()" onkeydown="handleKeydown(event, 'language')" aria-label="Toggle Language">
+            <i class="fas fa-globe"></i> <span></span>
+        </li>
+        <li id="size-increase" tabindex="0" onclick="increaseSize()" onkeydown="handleKeydown(event, 'size-increase')" aria-label="Increase Size">
+            <i class="fas fa-plus"></i> <span></span>
+        </li>
+        <li id="size-decrease" tabindex="0" onclick="decreaseSize()" onkeydown="handleKeydown(event, 'size-decrease')" aria-label="Decrease Size">
+            <i class="fas fa-minus"></i> <span></span>
+        </li>
+        <li id="size-reset" tabindex="0" onclick="resetSize()" onkeydown="handleKeydown(event, 'size-reset')" aria-label="Reset Size">
+            <i class="fas fa-redo"></i> <span></span>
+        </li>
+    </ul>
+</div>
+<div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
+
+<main class="container py-4">
+    <div id="pdf-viewer"></div>
+</main>
+
+<footer>
+    <p>
+        <span id="copyright-ar">جميع الحقوق محفوظة © جامعة الباحة 2025.</span>
+        <span id="copyright-en" style="display: none;">All rights reserved © Albaha University 2025.</span>
+    </p>
+</footer>
+
+<div id="loader-overlay">
+    <div class="spinner"></div>
+</div>
+
+<script>
+    let lang, isArabic;
+    let currentMode = 'default';
+    let sizeScale = 1;
+    let pdfUrl, displayName;
+
+    function waitForPdfJs() {
+        return new Promise((resolve, reject) => {
+            if (typeof pdfjsLib !== 'undefined') {
+                console.log("PDF.js is loaded.");
+                resolve();
+            } else {
+                console.log("Waiting for PDF.js...");
+                const script = document.querySelector('script[src*="pdf.min.js"]');
+                if (script) {
+                    script.onload = () => {
+                        console.log("PDF.js loaded.");
+                        resolve();
+                    };
+                    script.onerror = () => reject(new Error("PDF.js script failed to load"));
+                } else {
+                    reject(new Error("PDF.js script not found"));
+                }
+            }
+        });
+    }
+
+    function sanitizeHTML(str) {
+        const div = document.createElement('div');
+        div.textContent = str || '';
+        return div.innerHTML;
+    }
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const mainContainer = document.querySelector('main.container');
+        const isOpen = sidebar.classList.toggle('active');
+        overlay.classList.toggle('active', isOpen);
+        document.body.classList.toggle('sidebar-active', isOpen);
+        if (isOpen) {
+            sidebar.focus();
+            document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
+        } else {
+            document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
+        }
+    }
+
+    function handleKeydown(event, action) {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            switch (action) {
+                case 'language':
+                    toggleLanguage();
+                    break;
+                case 'size-increase':
+                    increaseSize();
+                    break;
+                case 'size-decrease':
+                    decreaseSize();
+                    break;
+                case 'size-reset':
+                    resetSize();
+                    break;
+                default:
+                    setMode(action);
+            }
+        }
+    }
+
+    async function setMode(mode, isUserAction = false) {
+        if (mode === 'default') {
+            try {
+                const device_info = await TWK.getDeviceInfo();
+                if (device_info.success) {
+                    lang = ['ar', 'en'].includes(device_info.result.app_language) ? device_info.result.app_language : 'ar';
+                    isArabic = lang === 'ar';
+                    localStorage.setItem('language', lang);
+                    document.documentElement.lang = lang;
+                    document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+                    const appearanceMode = device_info.result.appearance === 2 ? 'dark' : 'light';
+                    localStorage.setItem('accessibilityMode', appearanceMode);
+                    if (appearanceMode === 'dark') {
+                        setMode('dark');
+                    } else {
+                        document.body.classList.remove('grayscale-mode', 'dark-mode', 'light-mode', 'bg-light', 'bg-dark');
+                        document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
+                        document.body.classList.add('bg-light');
+                        document.getElementById(`mode-${mode}`).classList.add('active');
+                        currentMode = mode;
+                        localStorage.setItem('accessibilityMode', mode);
+                        localStorage.setItem('darkMode', false);
+                    }
+                    updateLanguage();
+                } else {
+                    lang = 'ar';
+                    isArabic = true;
+                    localStorage.setItem('language', lang);
+                    localStorage.setItem('accessibilityMode', 'light');
+                    document.body.classList.remove('grayscale-mode', 'dark-mode', 'light-mode', 'bg-light', 'bg-dark');
+                    document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
+                    document.body.classList.add('bg-light');
+                    document.getElementById(`mode-default`).classList.add('active');
+                    currentMode = 'default';
+                    localStorage.setItem('darkMode', false);
+                    document.documentElement.lang = lang;
+                    document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+                    updateLanguage();
+                }
+            } catch (e) {
+                console.error('Failed to get device info in setMode:', e);
+                lang = 'ar';
+                isArabic = true;
+                localStorage.setItem('language', lang);
+                localStorage.setItem('accessibilityMode', 'light');
+                document.body.classList.remove('grayscale-mode', 'dark-mode', 'light-mode', 'bg-light', 'bg-dark');
+                document.getElementById(`mode-default`).classList.add('active');
+                currentMode = 'default';
+                localStorage.setItem('darkMode', false);
+                document.documentElement.lang = lang;
+                document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+                updateLanguage();
+            }
+        } else {
+            document.body.classList.remove('grayscale-mode', 'dark-mode', 'light-mode', 'bg-light', 'bg-dark');
+            document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
+            if (mode === 'dark') {
+                document.body.classList.add('dark-mode', 'bg-dark');
+            } else if (mode === 'grayscale') {
+                document.body.classList.add('grayscale-mode', 'bg-light');
+            } else if (mode === 'light') {
+                document.body.classList.add('light-mode', 'bg-light');
+            } else {
+                document.body.classList.add('bg-light');
+            }
+            document.getElementById(`mode-${mode}`).classList.add('active');
+            currentMode = mode;
+            localStorage.setItem('accessibilityMode', mode);
+            localStorage.setItem('darkMode', mode === 'dark');
+        }
+        renderPDF();
+    }
+
+    function toggleLanguage() {
+        lang = isArabic ? 'en' : 'ar';
+        isArabic = !isArabic;
+        localStorage.setItem('language', lang);
+        document.documentElement.lang = lang;
+        document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+        document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
+        document.getElementById('language-switcher').classList.add('active');
+        updateLanguage();
+    }
+
+    function updateLanguage() {
+        document.getElementById('title').textContent = sanitizeHTML(displayName || (isArabic ? 'عارض PDF' : 'PDF Viewer'));
+        const labels = document.querySelectorAll('.sidebar ul li span');
+        labels[0].textContent = isArabic ? 'الوضع الافتراضي' : 'Default Mode';
+        labels[1].textContent = isArabic ? 'الوضع الرمادي' : 'Grayscale Mode';
+        labels[2].textContent = isArabic ? 'الوضع الفاتح' : 'Light Mode';
+        labels[3].textContent = isArabic ? 'الوضع الداكن' : 'Dark Mode';
+        labels[4].textContent = isArabic ? 'ُEnglish' : 'العربية';
+        labels[5].textContent = isArabic ? 'زيادة الحجم' : 'Increase Size';
+        labels[6].textContent = isArabic ? 'تقليل الحجم' : 'Decrease Size';
+        labels[7].textContent = isArabic ? 'إعادة تعيين الحجم' : 'Reset Size';
+        document.getElementById('copyright-ar').style.display = isArabic ? 'inline' : 'none';
+        document.getElementById('copyright-en').style.display = isArabic ? 'none' : 'inline';
+        document.querySelector('.back-btn i').className = isArabic ? 'fas fa-arrow-right' : 'fas fa-arrow-left';
+        document.querySelector('.share-btn').title = isArabic ? 'مشاركة' : 'Share';
+    }
+
+    function increaseSize() {
+        sizeScale = Math.min(sizeScale * 1.2, 1.5);
+        document.documentElement.style.setProperty('--size-scale', sizeScale);
+        localStorage.setItem('sizeScale', sizeScale);
+        document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
+        document.getElementById('size-increase').classList.add('active');
+        renderPDF();
+    }
+
+    function decreaseSize() {
+        sizeScale = Math.max(sizeScale / 1.2, 0.5);
+        document.documentElement.style.setProperty('--size-scale', sizeScale);
+        localStorage.setItem('sizeScale', sizeScale);
+        document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
+        document.getElementById('size-decrease').classList.add('active');
+        renderPDF();
+    }
+
+    function resetSize() {
+        sizeScale = 1;
+        document.documentElement.style.setProperty('--size-scale', sizeScale);
+        localStorage.setItem('sizeScale', sizeScale);
+        document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
+        document.getElementById('size-reset').classList.add('active');
+        renderPDF();
+    }
+
+    function goBack() {
+        window.location.href = `index.html?lang=${lang}&mode=${currentMode}&size=${sizeScale}`;
+    }
+
+    async function shareFile() {
+        document.getElementById('loader-overlay').style.display = 'flex';
+        try {
+            const pdfResp = await fetch(pdfUrl, {
+                headers: { 'Accept': 'application/pdf' }
+            });
+            if (!pdfResp.ok) throw new Error(isArabic ? 'فشل تحميل الملف' : 'Failed to download file');
+
+            const blob = await pdfResp.blob();
+            const base64 = await blobToBase64(blob);
+
+            const shareResponse = await TWK.share(displayName || 'Document', base64, 'application/pdf');
+            if (!shareResponse?.success) {
+                console.error('Share response:', shareResponse);
+                throw new Error(isArabic ? 'فشلت المشاركة' : 'Share failed');
+            }
+        } catch (e) {
+            console.error('Share file error:', e.message);
+            const pdfViewer = document.getElementById('pdf-viewer');
+            pdfViewer.innerHTML = `<div class="alert alert-danger">${sanitizeHTML(e.message)}</div>`;
+        } finally {
+            document.getElementById('loader-overlay').style.display = 'none';
+        }
+    }
+
+    function blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    async function renderPDF() {
+        const pdfViewer = document.getElementById('pdf-viewer');
+        pdfViewer.innerHTML = '';
+        document.getElementById('loader-overlay').style.display = 'flex';
+        try {
+            const pdf = await pdfjsLib.getDocument(pdfUrl).promise;
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                const page = await pdf.getPage(pageNum);
+                const viewport = page.getViewport({ scale: sizeScale });
+                const canvas = document.createElement('canvas');
+                canvas.className = 'pdf-page';
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                const context = canvas.getContext('2d');
+                await page.render({ canvasContext: context, viewport }).promise;
+                pdfViewer.appendChild(canvas);
+            }
+        } catch (e) {
+            console.error('PDF render error:', e.message);
+            pdfViewer.innerHTML = `<div class="alert alert-danger">${sanitizeHTML(isArabic ? `خطأ في تحميل PDF: ${e.message}` : `Error loading PDF: ${e.message}`)}</div>`;
+        } finally {
+            document.getElementById('loader-overlay').style.display = 'none';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        document.getElementById('sidebar').classList.remove('active');
+        document.getElementById('overlay').classList.remove('active');
+        document.body.classList.remove('sidebar-active');
+
+        try {
+            await waitForPdfJs();
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdf.worker.min.js';
+        } catch (e) {
+            console.error('PDF.js failed to load:', e);
+            document.getElementById('pdf-viewer').innerHTML = `<div class="alert alert-danger">${sanitizeHTML(isArabic ? 'خطأ في تحميل مكتبة PDF' : 'Failed to load PDF library')}</div>`;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        pdfUrl = urlParams.get('pdf') ? decodeURIComponent(urlParams.get('pdf')) : '';
+        lang = urlParams.get('lang') || 'ar';
+        isArabic = lang === 'ar';
+        currentMode = urlParams.get('mode') || localStorage.getItem('accessibilityMode') || 'default';
+        sizeScale = parseFloat(urlParams.get('size') || localStorage.getItem('sizeScale') || '1');
+        displayName = urlParams.get('name') ? decodeURIComponent(urlParams.get('name')) : '';
+
+        if (!pdfUrl) {
+            document.getElementById('pdf-viewer').innerHTML = `<div class="alert alert-danger">${sanitizeHTML(isArabic ? 'لم يتم تحديد ملف PDF' : 'No PDF file specified')}</div>`;
+            return;
+        }
+
+        document.documentElement.lang = lang;
+        document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+        document.documentElement.style.setProperty('--size-scale', sizeScale);
+        setMode(currentMode);
+
+        updateLanguage();
+        renderPDF();
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>File Downloads</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="miniapps.css">
+    <link href="css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <script src="twkhelper/twkhelper.js"></script>
+    <script src="constants.js"></script>
+    <script src="js/pdf.min.js"></script>
+
+    <style>
+
+    </style>
+</head>
+
+<body class="bg-light">
+    <div id="pull-to-refresh">
+        <div class="pull-to-refresh-container">
+            <div class="pull-spinner"></div>
+        </div>
+    </div>
+    <div class="header-container">
+        <h2 id="title" class="text-center mb-1"></h2>
+        <button class="toggle-btn" onclick="toggleSidebar()" aria-label="Toggle Sidebar"><i
+                class="fa-solid fa-ellipsis"></i></button>
+    </div>
+    <div class="sidebar" id="sidebar" tabindex="-1">
+        <ul>
+            <li id="mode-default" tabindex="0" onclick="setMode('default')" onkeydown="handleKeydown(event, 'default')"
+                aria-label="Default Mode">
+                <i class="fas fa-home"></i> <span></span>
+            </li>
+            <li id="mode-grayscale" tabindex="0" onclick="setMode('grayscale')"
+                onkeydown="handleKeydown(event, 'grayscale')" aria-label="Grayscale Mode">
+                <i class="fas fa-adjust"></i> <span></span>
+            </li>
+            <li id="mode-light" tabindex="0" onclick="setMode('light')" onkeydown="handleKeydown(event, 'light')"
+                aria-label="Light Mode">
+                <i class="fas fa-sun"></i> <span></span>
+            </li>
+            <li id="mode-dark" tabindex="0" onclick="setMode('dark')" onkeydown="handleKeydown(event, 'dark')"
+                aria-label="Dark Mode">
+                <i class="fas fa-moon"></i> <span></span>
+            </li>
+            <li id="language-switcher" tabindex="0" onclick="toggleLanguage()"
+                onkeydown="handleKeydown(event, 'language')" aria-label="Toggle Language">
+                <i class="fas fa-globe"></i> <span></span>
+            </li>
+            <li id="size-increase" tabindex="0" onclick="increaseSize()"
+                onkeydown="handleKeydown(event, 'size-increase')" aria-label="Increase Size">
+                <i class="fas fa-plus"></i> <span></span>
+            </li>
+            <li id="size-decrease" tabindex="0" onclick="decreaseSize()"
+                onkeydown="handleKeydown(event, 'size-decrease')" aria-label="Decrease Size">
+                <i class="fas fa-minus"></i> <span></span>
+            </li>
+            <li id="size-reset" tabindex="0" onclick="resetSize()" onkeydown="handleKeydown(event, 'size-reset')"
+                aria-label="Reset Size">
+                <i class="fas fa-redo"></i> <span></span>
+            </li>
+        </ul>
+    </div>
+    <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
+
+    <main class="container py-4">
+        <!--<h4 id="full_name" class="text-center mb-1"></h4>-->
+        <div id="roadmaps-container" class="roadmaps-grid"></div>
+
+        <!-- مكان تفاصيل الـ roadmap عند الضغط -->
+        <div id="roadmap-detail" class="roadmap-detail d-none"></div>
+
+    </main>
+
+    <footer>
+        <p>
+            <span id="copyright-ar">جميع الحقوق محفوظة © جامعة الباحة 2025.</span>
+            <span id="copyright-en" style="display: none;">All rights reserved © Albaha University 2025.</span>
+        </p>
+    </footer>
+
+    <div id="loader-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        let lang, isArabic;
+        let currentMode = 'default';
+        let sizeScale = 1;
+        let touchStartY = null;
+        let pullDistance = 0;
+        const pullThreshold = 80;
+
+        function waitForPdfJs() {
+            return new Promise((resolve, reject) => {
+                if (typeof pdfjsLib !== 'undefined') {
+                    console.log("PDF.js is loaded.");
+                    resolve();
+                } else {
+                    console.log("Waiting for PDF.js...");
+                    const script = document.querySelector('script[src*="pdf.min.js"]');
+                    if (script) {
+                        script.onload = () => {
+                            console.log("PDF.js loaded.");
+                            resolve();
+                        };
+                        script.onerror = () => reject(new Error("PDF.js script failed to load"));
+                    } else {
+                        reject(new Error("PDF.js script not found"));
+                    }
+                }
+            });
+        }
+
+        function sanitizeHTML(str) {
+            const div = document.createElement('div');
+            div.textContent = str || '';
+            return div.innerHTML;
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const mainContainer = document.querySelector('main.container');
+            const isOpen = sidebar.classList.toggle('active');
+            overlay.classList.toggle('active', isOpen);
+            document.body.classList.toggle('sidebar-active', isOpen);
+            if (isOpen) {
+                sidebar.focus();
+                document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
+            } else {
+                document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
+            }
+        }
+
+        function handleKeydown(event, action) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                switch (action) {
+                    case 'language':
+                        toggleLanguage();
+                        break;
+                    case 'size-increase':
+                        increaseSize();
+                        break;
+                    case 'size-decrease':
+                        decreaseSize();
+                        break;
+                    case 'size-reset':
+                        resetSize();
+                        break;
+                    default:
+                        setMode(action);
+                }
+            }
+        }
+
+        async function setMode(mode, isUserAction = false) {
+            if (mode === 'default') {
+                try {
+                    const device_info = await TWK.getDeviceInfo();
+                    if (device_info.success) {
+                        lang = ['ar', 'en'].includes(device_info.result.app_language) ? device_info.result.app_language : 'ar';
+                        isArabic = lang === 'ar';
+                        localStorage.setItem('language', lang);
+                        document.documentElement.lang = lang;
+                        document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+                        const appearanceMode = device_info.result.appearance === 2 ? 'dark' : 'default';
+                        localStorage.setItem('accessibilityMode', appearanceMode);
+                        if (appearanceMode === 'dark') {
+                            setMode('dark');
+                        } else {
+                            document.body.classList.remove('grayscale-mode', 'dark-mode', 'light-mode', 'bg-light', 'bg-dark');
+                            document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
+                            document.body.classList.add('bg-light');
+                            document.getElementById(`mode-${mode}`).classList.add('active');
+                            currentMode = mode;
+                            localStorage.setItem('accessibilityMode', mode);
+                            localStorage.setItem('darkMode', false);
+                        }
+                        updateLanguage();
+                    } else {
+                        lang = 'ar';
+                        isArabic = true;
+                        localStorage.setItem('language', lang);
+                        localStorage.setItem('accessibilityMode', 'default');
+                        document.body.classList.remove('grayscale-mode', 'dark-mode', 'light-mode', 'bg-light', 'bg-dark');
+                        document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
+                        document.body.classList.add('bg-light');
+                        document.getElementById(`mode-default`).classList.add('active');
+                        currentMode = 'default';
+                        localStorage.setItem('darkMode', false);
+                        document.documentElement.lang = lang;
+                        document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+                        updateLanguage();
+                    }
+                } catch (e) {
+                    console.error('Failed to get device info in setMode:', e);
+                    lang = 'ar';
+                    isArabic = true;
+                    localStorage.setItem('language', lang);
+                    localStorage.setItem('accessibilityMode', 'default');
+                    document.body.classList.remove('grayscale-mode', 'dark-mode', 'light-mode', 'bg-light', 'bg-dark');
+                    document.getElementById(`mode-default`).classList.add('active');
+                    currentMode = 'default';
+                    localStorage.setItem('darkMode', false);
+                    document.documentElement.lang = lang;
+                    document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+                    updateLanguage();
+                }
+            } else {
+                document.body.classList.remove('grayscale-mode', 'dark-mode', 'light-mode', 'bg-light', 'bg-dark');
+                document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
+                if (mode === 'dark') {
+                    document.body.classList.add('dark-mode', 'bg-dark');
+                } else if (mode === 'grayscale') {
+                    document.body.classList.add('grayscale-mode', 'bg-light');
+                } else if (mode === 'light') {
+                    document.body.classList.add('light-mode', 'bg-light');
+                } else {
+                    document.body.classList.add('bg-light');
+                }
+                document.getElementById(`mode-${mode}`).classList.add('active');
+                currentMode = mode;
+                localStorage.setItem('accessibilityMode', mode);
+                localStorage.setItem('darkMode', mode === 'dark');
+            }
+            if (isUserAction && mode === 'default') {
+                fetchFileList();
+            }
+        }
+
+        function toggleLanguage() {
+            lang = isArabic ? 'en' : 'ar';
+            isArabic = !isArabic;
+            localStorage.setItem('language', lang);
+            document.documentElement.lang = lang;
+            document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+            document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
+            document.getElementById('language-switcher').classList.add('active');
+            updateLanguage();
+            fetchFileList();
+        }
+
+        function updateLanguage() {
+            document.getElementById('title').textContent = isArabic ? 'أدلة جامعة الباحة' : 'Albaha University Guides';
+            const labels = document.querySelectorAll('.sidebar ul li span');
+            labels[0].textContent = isArabic ? 'الوضع الافتراضي' : 'Default Mode';
+            labels[1].textContent = isArabic ? 'الوضع الرمادي' : 'Grayscale Mode';
+            labels[2].textContent = isArabic ? 'الوضع الفاتح' : 'Light Mode';
+            labels[3].textContent = isArabic ? 'الوضع الداكن' : 'Dark Mode';
+            labels[4].textContent = isArabic ? 'English' : 'العربية';
+            labels[5].textContent = isArabic ? 'زيادة الحجم' : 'Increase Size';
+            labels[6].textContent = isArabic ? 'تقليل الحجم' : 'Decrease Size';
+            labels[7].textContent = isArabic ? 'إعادة تعيين الحجم' : 'Reset Size';
+            document.getElementById('copyright-ar').style.display = isArabic ? 'inline' : 'none';
+            document.getElementById('copyright-en').style.display = isArabic ? 'none' : 'inline';
+        }
+
+        function increaseSize() {
+            sizeScale = Math.min(sizeScale * 1.2, 1.5);
+            document.documentElement.style.setProperty('--size-scale', sizeScale);
+            localStorage.setItem('sizeScale', sizeScale);
+            document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
+            document.getElementById('size-increase').classList.add('active');
+        }
+
+        function decreaseSize() {
+            sizeScale = Math.max(sizeScale / 1.2, 0.5);
+            document.documentElement.style.setProperty('--size-scale', sizeScale);
+            localStorage.setItem('sizeScale', sizeScale);
+            document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
+            document.getElementById('size-decrease').classList.add('active');
+        }
+
+        function resetSize() {
+            sizeScale = 1;
+            document.documentElement.style.setProperty('--size-scale', sizeScale);
+            localStorage.setItem('sizeScale', sizeScale);
+            document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
+            document.getElementById('size-reset').classList.add('active');
+        }
+
+        async function fetchFileList() {
+            const fileListDiv = document.getElementById('file-list');
+            fileListDiv.innerHTML = '';
+            document.getElementById('loader-overlay').style.display = 'flex';
+
+            let token = null, nationalId = null, fullNameAr = null, fullNameEn = null, appearance = null,
+                status = 'success', errorMessage = null;
+
+            try {
+                // Fetch token
+                const tokenResponse = await TWK.generateToken();
+
+                if (!tokenResponse || (typeof tokenResponse === 'object' && (!tokenResponse.result || !tokenResponse.result.token))) {
+                    throw new Error('Failed to generate token');
+                }
+                token = tokenResponse.result.token;
+                //console.log(tokenResponse.result.token);
+
+                // Fetch national ID
+                const userIdResponse = await TWK.getUserId();
+                if (!userIdResponse || !userIdResponse.success || !userIdResponse.result || !userIdResponse.result.user_id) {
+                    throw new Error('Failed to fetch national ID');
+                }
+                nationalId = userIdResponse.result.user_id;
+
+                // Fetch full name
+                const fullNameResponse = await TWK.V2.getUserFullName();
+                if (!fullNameResponse || !fullNameResponse.success || !fullNameResponse.result || !fullNameResponse.result.full_name_ar || !fullNameResponse.result.full_name_en) {
+                    throw new Error('Failed to fetch full name');
+                }
+                fullNameAr = fullNameResponse.result.full_name_ar;
+                fullNameEn = fullNameResponse.result.full_name_en;
+
+                // Set full name based on language
+                //document.getElementById('full_name').textContent = sanitizeHTML(isArabic ? 'مرحباً '+fullNameAr : 'Welcome '+fullNameEn);
+
+                // Fetch device info for language and appearance
+                const deviceInfo = await TWK.getDeviceInfo();
+                if (!deviceInfo || !deviceInfo.success || !deviceInfo.result) {
+                    throw new Error('Failed to fetch device info');
+                }
+                lang = ['ar', 'en'].includes(deviceInfo.result.app_language) ? deviceInfo.result.app_language : 'ar';
+                appearance = deviceInfo.result.appearance || null;
+            } catch (e) {
+                status = 'error';
+                errorMessage = e.message;
+                console.error('Error fetching TWK data:', e.message);
+                //document.getElementById('full_name').textContent = sanitizeHTML(isArabic ? 'خطأ: فشل جلب الاسم' : 'Error: Failed to fetch name');
+            }
+            let gender = '';
+            try {
+                const responseGender = await TWK.getUserGender();
+                if (responseGender.success) {
+                    gender = responseGender.result.gender;
+                }
+            } catch (e) {
+                console.error('Failed to get user Gender:', e);
+            }
+
+            let nationality_iso = '';
+            try {
+                const nationality_isoResponse = await TWK.getUserNationalityISO();
+
+                if (nationality_isoResponse && nationality_isoResponse.success && nationality_isoResponse.result) {
+                    nationality_iso = nationality_isoResponse.result.nationality_iso;
+                }
+            } catch (e) {
+                console.error('Failed to get user Nationality ISO:', e);
+            }
+
+            let nationality = '';
+            try {
+                const nationalityResponse = await TWK.getUserNationality();
+
+                if (nationalityResponse && nationalityResponse.success && nationalityResponse.result) {
+                    nationality = nationalityResponse.result.nationality_name;
+                }
+            } catch (e) {
+                console.error('Failed to get user Nationality:', e);
+            }
+
+            let user_type = '';
+            try {
+                const user_typeResponse = await TWK.getUserType();
+
+                if (user_typeResponse && user_typeResponse.success && user_typeResponse.result) {
+                    user_type = user_typeResponse.result.user_type;
+                }
+            } catch (e) {
+                console.error('Failed to get user Type:', e);
+            }
+
+            let mobile_number = '';
+            try {
+                const mobile_numberResponse = await TWK.getUserMobileNumber();
+
+                if (mobile_numberResponse && mobile_numberResponse.success && mobile_numberResponse.result) {
+                    mobile_number = mobile_numberResponse.result.mobile_number;
+                }
+            } catch (e) {
+                console.error('Failed to get user Mobile Number:', e);
+            }
+
+
+            try {
+                const url = `https://tawakkalnabe.bu.edu.sa/api/file-list?${new URLSearchParams({
+                    token: token || '',
+                    national_id: nationalId || '',
+                    full_name_ar: fullNameAr || '',
+                    full_name_en: fullNameEn || '',
+                    language: lang || '',
+                    appearance: appearance || '',
+                    requester_gender: gender || '',
+                    requester_nationality_iso: nationality_iso || '',
+                    requester_nationality: nationality || '',
+                    requester_user_type: user_type || '',
+                    requester_mobile_number: mobile_number || '',
+                    status: status,
+                    error_message: errorMessage || ''
+                }).toString()}`;
+
+                const resp = await fetch(url);
+                if (!resp.ok) throw new Error(isArabic ? 'فشل جلب القائمة' : 'Failed to fetch file list');
+
+                const files = await resp.json();
+                files.sort((a, b) => a.display_order - b.display_order);
+
+                fileListDiv.innerHTML = '';
+                files.forEach((file, idx) => {
+                    const item = document.createElement('div');
+                    item.className = 'file-item';
+                    item.dataset.order = idx;
+                    item.style.setProperty('--order', idx.toString());
+
+                    const displayName = isArabic ? file.display_name : (file.display_name_en || file.display_name);
+                    item.innerHTML = `
+          <i class="fas ${file.icon || 'fa-file-pdf'}"></i>
+          <div class="title" onclick="openFile('${idx}', '${sanitizeHTML(file.actual_name)}', '${sanitizeHTML(displayName)}')" role="button" tabindex="0" onkeydown="if(event.key === 'Enter' || event.key === ' ') openFile('${idx}', '${sanitizeHTML(file.actual_name)}', '${sanitizeHTML(displayName)}')">${sanitizeHTML(displayName)}</div>
+        `;
+                    fileListDiv.appendChild(item);
+                });
+            } catch (e) {
+                console.error('Fetch file list error:', e.message);
+                fileListDiv.innerHTML = `<div class="alert alert-danger">${sanitizeHTML(isArabic ? `خطأ: ${e.message}` : `Error: ${e.message}`)}</div>`;
+            } finally {
+                document.getElementById('loader-overlay').style.display = 'none';
+            }
+        }
+
+        async function openFile(idx, actualName, displayName) {
+            document.getElementById('loader-overlay').style.display = 'flex';
+            try {
+                if (!actualName || !actualName.match(/\.(pdf)$/i)) {
+                    throw new Error(isArabic ? 'رابط الملف غير صالح أو ليس ملف PDF' : 'Invalid file URL or not a PDF');
+                }
+
+                let url = actualName;
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    url = `https://tawakkalnabe.bu.edu.sa/api/download-file/${encodeURIComponent(actualName)}`;
+                }
+
+                console.log('Navigating to viewer with URL:', url);
+                window.location.href = `viewer.html?pdf=${encodeURIComponent(url)}&lang=${lang}&mode=${currentMode}&size=${sizeScale}&name=${encodeURIComponent(displayName)}`;
+            } catch (error) {
+                console.error('Error preparing file navigation:', error.message, 'URL:', actualName);
+                const fileListDiv = document.getElementById('file-list');
+                fileListDiv.innerHTML = `<div class="alert alert-danger">${sanitizeHTML(isArabic ? `تعذر فتح الملف: ${error.message}` : `Unable to open the file: ${error.message}`)}</div>`;
+            } finally {
+                document.getElementById('loader-overlay').style.display = 'none';
+            }
+        }
+
+        function handlePullToRefresh() {
+            const pullToRefresh = document.getElementById('pull-to-refresh');
+            const pullToRefreshContainer = pullToRefresh.querySelector('.pull-to-refresh-container');
+            let isPulling = false;
+
+            document.addEventListener('touchstart', (e) => {
+                if (document.getElementById('sidebar').classList.contains('active')) return;
+                if (window.scrollY === 0) {
+                    touchStartY = e.touches[0].clientY;
+                    isPulling = true;
+                    requestAnimationFrame(() => {
+                        pullToRefreshContainer.classList.add('pulling');
+                    });
+                }
+            });
+
+            document.addEventListener('touchmove', (e) => {
+                if (!isPulling) return;
+                const touchY = e.touches[0].clientY;
+                pullDistance = Math.max(0, touchY - touchStartY);
+                pullToRefresh.style.transform = `translateY(${pullDistance}px)`;
+                e.preventDefault();
+            });
+
+            document.addEventListener('touchend', () => {
+                if (!isPulling) return;
+                pullToRefreshContainer.classList.remove('pulling');
+                pullToRefresh.style.transform = 'translateY(0)';
+                if (pullDistance >= pullThreshold) {
+                    document.getElementById('loader-overlay').style.display = 'flex';
+                    fetchFileList().finally(() => {
+                        document.getElementById('loader-overlay').style.display = 'none';
+                    });
+                }
+                isPulling = false;
+                pullDistance = 0;
+                touchStartY = null;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            document.getElementById('sidebar').classList.remove('active');
+            document.getElementById('overlay').classList.remove('active');
+            document.body.classList.remove('sidebar-active');
+
+            try {
+                await waitForPdfJs();
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdf.worker.min.js';
+            } catch (e) {
+                console.error('PDF.js failed to load:', e);
+                document.getElementById('file-list').innerHTML = `<div class="alert alert-danger">${sanitizeHTML(isArabic ? 'خطأ في تحميل مكتبة PDF' : 'Failed to load PDF library')}</div>`;
+            }
+
+            try {
+                // Fetch device info to set initial language and appearance
+                const device_info = await TWK.getDeviceInfo();
+                if (device_info.success) {
+                    lang = ['ar', 'en'].includes(device_info.result.app_language) ? device_info.result.app_language : 'ar';
+                    isArabic = lang === 'ar';
+                    localStorage.setItem('language', lang);
+                    const appearanceMode = device_info.result.appearance === 2 ? 'dark' : 'default';
+                    localStorage.setItem('accessibilityMode', appearanceMode);
+                    setMode(appearanceMode);
+                } else {
+                    lang = 'ar';
+                    isArabic = true;
+                    localStorage.setItem('language', lang);
+                    localStorage.setItem('accessibilityMode', 'default');
+                    setMode('default');
+                }
+
+                // Fetch and set full name
+                const fullNameResponse = await TWK.V2.getUserFullName();
+                if (fullNameResponse && fullNameResponse.success && fullNameResponse.result && fullNameResponse.result.full_name_ar && fullNameResponse.result.full_name_en) {
+                    //document.getElementById('full_name').textContent = sanitizeHTML(isArabic ? fullNameResponse.result.full_name_ar : fullNameResponse.result.full_name_en);
+                } else {
+                    //document.getElementById('full_name').textContent = sanitizeHTML(isArabic ? 'خطأ: فشل جلب الاسم' : 'Error: Failed to fetch name');
+                }
+            } catch (e) {
+                console.error('Failed to get device info or full name:', e);
+                lang = 'ar';
+                isArabic = true;
+                localStorage.setItem('language', lang);
+                localStorage.setItem('accessibilityMode', 'default');
+                setMode('default');
+                //document.getElementById('full_name').textContent = sanitizeHTML(isArabic ? 'خطأ: فشل جلب الاسم' : 'Error: Failed to fetch name');
+            }
+
+            // Apply saved mode if it exists to allow user override
+            const savedMode = localStorage.getItem('accessibilityMode');
+            if (savedMode && savedMode !== 'default') {
+                setMode(savedMode);
+            }
+
+            // Apply saved size scale
+            const savedSizeScale = localStorage.getItem('sizeScale');
+            if (savedSizeScale) {
+                sizeScale = parseFloat(savedSizeScale);
+                document.documentElement.style.setProperty('--size-scale', sizeScale);
+            }
+
+            // Set document language and direction
+            document.documentElement.lang = lang;
+            document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+
+            updateLanguage();
+            //handlePullToRefresh();
+            await loadRoadmaps();
+
+        });
+    </script>
+    <script>async function loadRoadmaps() {
+            const container = document.getElementById('roadmaps-container');
+            const detail = document.getElementById('roadmap-detail');
+            container.innerHTML = '';
+            detail.classList.add('d-none');
+            detail.innerHTML = '';
+
+            document.getElementById('loader-overlay').style.display = 'flex';
+
+            try {
+                const resp = await fetch('data/roadmaps.json');
+                if (!resp.ok) throw new Error(isArabic ? 'فشل جلب المسارات' : 'Failed to fetch roadmaps');
+
+                const roadmaps = await resp.json();
+                roadmaps.sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+
+                roadmaps.forEach((rm) => {
+                    const card = document.createElement('div');
+                    card.className = 'roadmap-card';
+                    const title = isArabic ? rm.title_ar : rm.title_en;
+                    const desc = isArabic ? rm.description_ar : rm.description_en;
+
+                    card.innerHTML = `
+                <div class="roadmap-card-title">
+                    <i class="fas ${rm.icon || 'fa-route'} roadmap-card-icon" style="color:${rm.color || '#2196F3'}"></i>
+                    <span>${sanitizeHTML(title)}</span>
+                </div>
+                <div class="roadmap-card-desc">${sanitizeHTML(desc)}</div>
+                <span class="roadmap-card-tag">
+                    ${isArabic ? 'مسار مهني' : 'Career Path'}
+                </span>
+            `;
+
+                    card.onclick = () => renderRoadmapDetail(rm);
+                    card.onkeydown = (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            renderRoadmapDetail(rm);
+                        }
+                    };
+                    card.tabIndex = 0;
+
+                    container.appendChild(card);
+                });
+            } catch (e) {
+                console.error(e);
+                container.innerHTML = `<div class="alert alert-danger">${sanitizeHTML(isArabic ? e.message : e.message)}</div>`;
+            } finally {
+                document.getElementById('loader-overlay').style.display = 'none';
+            }
+        }
+    </script>
+    <script>function renderRoadmapDetail(roadmap) {
+            const detail = document.getElementById('roadmap-detail');
+            if (!detail) return;
+
+            const title = isArabic ? roadmap.title_ar : roadmap.title_en;
+            const desc = isArabic ? roadmap.description_ar : roadmap.description_en;
+
+            let html = `
+        <div class="roadmap-detail-header">
+            <div>
+                <div class="roadmap-detail-title">
+                    <i class="fas ${roadmap.icon || 'fa-route'}" style="color:${roadmap.color || '#2196F3'}; margin-inline-end:.4rem;"></i>
+                    ${sanitizeHTML(title)}
+                </div>
+                <div style="font-size:.85rem; opacity:.85;">${sanitizeHTML(desc)}</div>
+            </div>
+            <button class="roadmap-detail-close" onclick="document.getElementById('roadmap-detail').classList.add('d-none')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+
+            if (Array.isArray(roadmap.steps)) {
+                roadmap.steps.forEach((step) => {
+                    const phaseTitle = isArabic ? step.title_ar : step.title_en;
+                    html += `
+                <div class="roadmap-phase">
+                    <div class="roadmap-phase-title">
+                        ${isArabic ? 'المرحلة' : 'Phase'} ${step.phase || ''}: ${sanitizeHTML(phaseTitle)}
+                    </div>
+            `;
+
+                    if (Array.isArray(step.skills)) {
+                        step.skills.forEach((sk) => {
+                            const name = isArabic ? sk.name_ar : sk.name_en;
+                            html += `
+                        <div class="roadmap-skill">
+                            <i class="fas fa-circle" style="font-size:.4rem;"></i>
+                            <span>${sanitizeHTML(name)}</span>
+                            <span class="${sk.required ? 'roadmap-skill-required' : 'roadmap-skill-optional'}">
+                                ${sk.required ? (isArabic ? 'أساسي' : 'Required') : (isArabic ? 'اختياري' : 'Optional')}
+                            </span>
+                        </div>
+                    `;
+                        });
+                    }
+
+                    html += `</div>`;
+                });
+            }
+
+            detail.innerHTML = html;
+            detail.classList.remove('d-none');
+        }
+    </script>
+</body>
+
+</html>
