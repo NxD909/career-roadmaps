@@ -88,7 +88,113 @@
     <div id="loader-overlay">
         <div class="spinner"></div>
     </div>
+    <script>async function loadRoadmaps() {
+            const container = document.getElementById('roadmaps-container');
+            const detail = document.getElementById('roadmap-detail');
+            container.innerHTML = '';
+            detail.classList.add('d-none');
+            detail.innerHTML = '';
 
+            document.getElementById('loader-overlay').style.display = 'flex';
+
+            try {
+                const resp = await fetch('data/roadmaps.json');
+                if (!resp.ok) throw new Error(isArabic ? 'فشل جلب المسارات' : 'Failed to fetch roadmaps');
+
+                const roadmaps = await resp.json();
+                roadmaps.sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+
+                roadmaps.forEach((rm) => {
+                    const card = document.createElement('div');
+                    card.className = 'roadmap-card';
+                    const title = isArabic ? rm.title_ar : rm.title_en;
+                    const desc = isArabic ? rm.description_ar : rm.description_en;
+
+                    card.innerHTML = `
+                <div class="roadmap-card-title">
+                    <i class="fas ${rm.icon || 'fa-route'} roadmap-card-icon" style="color:${rm.color || '#2196F3'}"></i>
+                    <span>${sanitizeHTML(title)}</span>
+                </div>
+                <div class="roadmap-card-desc">${sanitizeHTML(desc)}</div>
+                <span class="roadmap-card-tag">
+                    ${isArabic ? 'مسار مهني' : 'Career Path'}
+                </span>
+            `;
+
+                    card.onclick = () => renderRoadmapDetail(rm);
+                    card.onkeydown = (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            renderRoadmapDetail(rm);
+                        }
+                    };
+                    card.tabIndex = 0;
+
+                    container.appendChild(card);
+                });
+            } catch (e) {
+                console.error(e);
+                container.innerHTML = `<div class="alert alert-danger">${sanitizeHTML(isArabic ? e.message : e.message)}</div>`;
+            } finally {
+                document.getElementById('loader-overlay').style.display = 'none';
+            }
+        }
+    </script>
+    <script>function renderRoadmapDetail(roadmap) {
+            const detail = document.getElementById('roadmap-detail');
+            if (!detail) return;
+
+            const title = isArabic ? roadmap.title_ar : roadmap.title_en;
+            const desc = isArabic ? roadmap.description_ar : roadmap.description_en;
+
+            let html = `
+        <div class="roadmap-detail-header">
+            <div>
+                <div class="roadmap-detail-title">
+                    <i class="fas ${roadmap.icon || 'fa-route'}" style="color:${roadmap.color || '#2196F3'}; margin-inline-end:.4rem;"></i>
+                    ${sanitizeHTML(title)}
+                </div>
+                <div style="font-size:.85rem; opacity:.85;">${sanitizeHTML(desc)}</div>
+            </div>
+            <button class="roadmap-detail-close" onclick="document.getElementById('roadmap-detail').classList.add('d-none')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+
+            if (Array.isArray(roadmap.steps)) {
+                roadmap.steps.forEach((step) => {
+                    const phaseTitle = isArabic ? step.title_ar : step.title_en;
+                    html += `
+                <div class="roadmap-phase">
+                    <div class="roadmap-phase-title">
+                        ${isArabic ? 'المرحلة' : 'Phase'} ${step.phase || ''}: ${sanitizeHTML(phaseTitle)}
+                    </div>
+            `;
+
+                    if (Array.isArray(step.skills)) {
+                        step.skills.forEach((sk) => {
+                            const name = isArabic ? sk.name_ar : sk.name_en;
+                            html += `
+                        <div class="roadmap-skill">
+                            <i class="fas fa-circle" style="font-size:.4rem;"></i>
+                            <span>${sanitizeHTML(name)}</span>
+                            <span class="${sk.required ? 'roadmap-skill-required' : 'roadmap-skill-optional'}">
+                                ${sk.required ? (isArabic ? 'أساسي' : 'Required') : (isArabic ? 'اختياري' : 'Optional')}
+                            </span>
+                        </div>
+                    `;
+                        });
+                    }
+
+                    html += `</div>`;
+                });
+            }
+
+            detail.innerHTML = html;
+            detail.classList.remove('d-none');
+        }
+    </script>
     <script>
         let lang, isArabic;
         let currentMode = 'default';
@@ -245,7 +351,7 @@
             document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
             document.getElementById('language-switcher').classList.add('active');
             updateLanguage();
-            fetchFileList();
+            loadRoadmaps();
         }
 
         function updateLanguage() {
@@ -570,113 +676,7 @@
 
         });
     </script>
-    <script>async function loadRoadmaps() {
-            const container = document.getElementById('roadmaps-container');
-            const detail = document.getElementById('roadmap-detail');
-            container.innerHTML = '';
-            detail.classList.add('d-none');
-            detail.innerHTML = '';
 
-            document.getElementById('loader-overlay').style.display = 'flex';
-
-            try {
-                const resp = await fetch('data/roadmaps.json');
-                if (!resp.ok) throw new Error(isArabic ? 'فشل جلب المسارات' : 'Failed to fetch roadmaps');
-
-                const roadmaps = await resp.json();
-                roadmaps.sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
-
-                roadmaps.forEach((rm) => {
-                    const card = document.createElement('div');
-                    card.className = 'roadmap-card';
-                    const title = isArabic ? rm.title_ar : rm.title_en;
-                    const desc = isArabic ? rm.description_ar : rm.description_en;
-
-                    card.innerHTML = `
-                <div class="roadmap-card-title">
-                    <i class="fas ${rm.icon || 'fa-route'} roadmap-card-icon" style="color:${rm.color || '#2196F3'}"></i>
-                    <span>${sanitizeHTML(title)}</span>
-                </div>
-                <div class="roadmap-card-desc">${sanitizeHTML(desc)}</div>
-                <span class="roadmap-card-tag">
-                    ${isArabic ? 'مسار مهني' : 'Career Path'}
-                </span>
-            `;
-
-                    card.onclick = () => renderRoadmapDetail(rm);
-                    card.onkeydown = (e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            renderRoadmapDetail(rm);
-                        }
-                    };
-                    card.tabIndex = 0;
-
-                    container.appendChild(card);
-                });
-            } catch (e) {
-                console.error(e);
-                container.innerHTML = `<div class="alert alert-danger">${sanitizeHTML(isArabic ? e.message : e.message)}</div>`;
-            } finally {
-                document.getElementById('loader-overlay').style.display = 'none';
-            }
-        }
-    </script>
-    <script>function renderRoadmapDetail(roadmap) {
-            const detail = document.getElementById('roadmap-detail');
-            if (!detail) return;
-
-            const title = isArabic ? roadmap.title_ar : roadmap.title_en;
-            const desc = isArabic ? roadmap.description_ar : roadmap.description_en;
-
-            let html = `
-        <div class="roadmap-detail-header">
-            <div>
-                <div class="roadmap-detail-title">
-                    <i class="fas ${roadmap.icon || 'fa-route'}" style="color:${roadmap.color || '#2196F3'}; margin-inline-end:.4rem;"></i>
-                    ${sanitizeHTML(title)}
-                </div>
-                <div style="font-size:.85rem; opacity:.85;">${sanitizeHTML(desc)}</div>
-            </div>
-            <button class="roadmap-detail-close" onclick="document.getElementById('roadmap-detail').classList.add('d-none')">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    `;
-
-            if (Array.isArray(roadmap.steps)) {
-                roadmap.steps.forEach((step) => {
-                    const phaseTitle = isArabic ? step.title_ar : step.title_en;
-                    html += `
-                <div class="roadmap-phase">
-                    <div class="roadmap-phase-title">
-                        ${isArabic ? 'المرحلة' : 'Phase'} ${step.phase || ''}: ${sanitizeHTML(phaseTitle)}
-                    </div>
-            `;
-
-                    if (Array.isArray(step.skills)) {
-                        step.skills.forEach((sk) => {
-                            const name = isArabic ? sk.name_ar : sk.name_en;
-                            html += `
-                        <div class="roadmap-skill">
-                            <i class="fas fa-circle" style="font-size:.4rem;"></i>
-                            <span>${sanitizeHTML(name)}</span>
-                            <span class="${sk.required ? 'roadmap-skill-required' : 'roadmap-skill-optional'}">
-                                ${sk.required ? (isArabic ? 'أساسي' : 'Required') : (isArabic ? 'اختياري' : 'Optional')}
-                            </span>
-                        </div>
-                    `;
-                        });
-                    }
-
-                    html += `</div>`;
-                });
-            }
-
-            detail.innerHTML = html;
-            detail.classList.remove('d-none');
-        }
-    </script>
 </body>
 
 </html>
