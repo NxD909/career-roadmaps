@@ -763,6 +763,25 @@
                 touchStartY = null;
             });
         }
+        // Listen for real-time OS theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            // Only auto-update if the user's app is currently set to 'default' mode
+            if (currentMode === 'default') {
+                const prefersDark = event.matches;
+
+                // Clean up old classes
+                document.body.classList.remove('grayscale-mode', 'dark-mode', 'light-mode', 'bg-light', 'bg-dark');
+
+                // Apply the new theme instantly
+                if (prefersDark) {
+                    document.body.classList.add('dark-mode', 'bg-dark');
+                    localStorage.setItem('darkMode', true);
+                } else {
+                    document.body.classList.add('bg-light');
+                    localStorage.setItem('darkMode', false);
+                }
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('sidebar').classList.remove('active');
