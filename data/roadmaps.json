@@ -1,52 +1,106 @@
 [
   {
     "id": "software-engineer",
+    "category": "software",
+    "level": "beginner",
     "title_ar": "مهندس برمجيات",
     "title_en": "Software Engineer",
     "icon": "fa-code",
     "color": "#4CAF50",
-    "description_ar": "تعلم تطوير التطبيقات والأنظمة البرمجية",
-    "description_en": "Learn to develop applications and software systems",
+    "description_ar": "مسار لتعلم تطوير التطبيقات والأنظمة البرمجية.",
+    "description_en": "Path to learn building applications and software systems.",
     "display_order": 1,
     "steps": [
       {
         "phase": 1,
-        "title_ar": "أساسيات البرمجة",
-        "title_en": "Programming Fundamentals",
+        "title_ar": "الأساسيات",
+        "title_en": "Fundamentals",
         "skills": [
-          { "name_ar": "لغة برمجة (Python/JavaScript)", "name_en": "Programming Language (Python/JavaScript)", "required": true },
-          { "name_ar": "هياكل البيانات", "name_en": "Data Structures", "required": true },
-          { "name_ar": "الخوارزميات", "name_en": "Algorithms", "required": true }
+          { "name_ar": "منطق البرمجة", "name_en": "Programming logic", "required": true },
+          { "name_ar": "لغة برمجة (Python/JS)", "name_en": "Programming language (Python/JS)", "required": true }
         ]
       },
       {
         "phase": 2,
-        "title_ar": "تطوير الويب",
-        "title_en": "Web Development",
+        "title_ar": "هياكل البيانات والخوارزميات",
+        "title_en": "Data Structures & Algorithms",
         "skills": [
-          { "name_ar": "HTML/CSS", "name_en": "HTML/CSS", "required": true },
-          { "name_ar": "JavaScript", "name_en": "JavaScript", "required": true },
-          { "name_ar": "React أو Vue", "name_en": "React or Vue", "required": false }
+          { "name_ar": "هياكل البيانات", "name_en": "Data Structures", "required": true },
+          { "name_ar": "الخوارزميات الأساسية", "name_en": "Basic Algorithms", "required": true }
         ]
       },
       {
         "phase": 3,
-        "title_ar": "قواعد البيانات",
-        "title_en": "Databases",
+        "title_ar": "تطوير الويب",
+        "title_en": "Web Development",
         "skills": [
-          { "name_ar": "SQL", "name_en": "SQL", "required": true },
-          { "name_ar": "MongoDB", "name_en": "MongoDB", "required": false },
-          { "name_ar": "تصميم قواعد البيانات", "name_en": "Database Design", "required": true }
+          { "name_ar": "HTML/CSS/JS", "name_en": "HTML/CSS/JS", "required": true },
+          { "name_ar": "إطار عمل (React/Vue)", "name_en": "Framework (React/Vue)", "required": false }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "devops",
+    "category": "devops",
+    "level": "intermediate",
+    "title_ar": "مهندس DevOps",
+    "title_en": "DevOps Engineer",
+    "icon": "fa-server",
+    "color": "#2196F3",
+    "description_ar": "مسار لربط التطوير بالتشغيل والأتمتة.",
+    "description_en": "Path to connect development with operations & automation.",
+    "pdf": "roadmaps/devops.pdf",
+    "display_order": 2,
+    "steps": [
+      {
+        "phase": 1,
+        "title_ar": "أساسيات النظام",
+        "title_en": "System Basics",
+        "skills": [
+          { "name_ar": "Linux أساسيات", "name_en": "Linux basics", "required": true },
+          { "name_ar": "Networking أساسيات", "name_en": "Networking basics", "required": true }
         ]
       },
       {
-        "phase": 4,
-        "title_ar": "أدوات ومشاريع",
-        "title_en": "Tools & Projects",
+        "phase": 2,
+        "title_ar": "الحاويات",
+        "title_en": "Containers",
         "skills": [
-          { "name_ar": "Git/GitHub", "name_en": "Git/GitHub", "required": true },
-          { "name_ar": "APIs", "name_en": "APIs", "required": true },
-          { "name_ar": "بناء 3-5 مشاريع برمجية كاملة", "name_en": "Build 3–5 complete software projects", "required": true }
+          { "name_ar": "Docker", "name_en": "Docker", "required": true },
+          { "name_ar": "Docker Compose", "name_en": "Docker Compose", "required": false }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cybersecurity",
+    "category": "security",
+    "level": "beginner",
+    "title_ar": "مختص أمن سيبراني",
+    "title_en": "Cybersecurity Specialist",
+    "icon": "fa-shield-alt",
+    "color": "#E53935",
+    "description_ar": "مسار لحماية الأنظمة والشبكات من الهجمات.",
+    "description_en": "Path to protect systems and networks from attacks.",
+    "display_order": 3,
+    "steps": [
+      {
+        "phase": 1,
+        "title_ar": "الأساسيات",
+        "title_en": "Fundamentals",
+        "skills": [
+          { "name_ar": "أساسيات الشبكات", "name_en": "Networking basics", "required": true },
+          { "name_ar": "نظام Linux", "name_en": "Linux", "required": true }
+        ]
+      },
+      {
+        "phase": 2,
+        "title_ar": "مفاهيم الأمن",
+        "title_en": "Security Concepts",
+        "skills": [
+          { "name_ar": "مفاهيم التشفير", "name_en": "Cryptography basics", "required": false },
+          { "name_ar": "تهديدات شائعة", "name_en": "Common threats", "required": true }
         ]
       }
     ]
