@@ -421,15 +421,32 @@
                         updateLanguage();
                     }
                 } catch (e) {
-                    console.error('Failed to get device info in setMode:', e);
+                    console.error('Failed to get device info in setMode, falling back to browser settings:', e);
+
+                    // 1. Check if the browser or device is currently set to Dark Mode
+                    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
                     lang = 'ar';
                     isArabic = true;
                     localStorage.setItem('language', lang);
                     localStorage.setItem('accessibilityMode', 'default');
+
+                    // 2. Clear out any old background and mode classes
                     document.body.classList.remove('grayscale-mode', 'dark-mode', 'light-mode', 'bg-light', 'bg-dark');
+                    document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
+
+                    // 3. Apply Dark Mode if the browser prefers it, otherwise apply Light Mode
+                    if (prefersDark) {
+                        document.body.classList.add('dark-mode', 'bg-dark');
+                        localStorage.setItem('darkMode', true);
+                    } else {
+                        document.body.classList.add('bg-light');
+                        localStorage.setItem('darkMode', false);
+                    }
+
                     document.getElementById(`mode-default`).classList.add('active');
                     currentMode = 'default';
-                    localStorage.setItem('darkMode', false);
+
                     document.documentElement.lang = lang;
                     document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
                     updateLanguage();
