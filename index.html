@@ -14,10 +14,22 @@
     <script src="twkhelper/twkhelper.js"></script>
     <script src="constants.js"></script>
     <script src="js/pdf.min.js"></script>
+    <script src="js/mermaid.min.js"></script>
 
-    <style>
-
-    </style>
+    <script>
+        // Initialize Mermaid globally
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'base',
+            securityLevel: 'loose',
+            flowchart: {
+                curve: 'basis',
+                nodeSpacing: 60,
+                rankSpacing: 80,
+                htmlLabels: true
+            }
+        });
+    </script>
 </head>
 
 <body class="bg-light">
@@ -28,8 +40,8 @@
     </div>
     <div class="header-container">
         <h2 id="title" class="text-center mb-1"></h2>
-        <button class="toggle-btn" onclick="toggleSidebar()" aria-label="Toggle Sidebar"><i
-                class="fa-solid fa-ellipsis"></i></button>
+        <button class="toggle-btn" onclick="toggleSidebar()" aria-label="Toggle Sidebar"><i class="fa-solid fa-ellipsis"
+                style="color: rgb(255, 255, 255);"></i></button>
     </div>
     <div class="sidebar" id="sidebar" tabindex="-1">
         <ul>
@@ -70,10 +82,21 @@
     <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
 
     <main class="container py-4">
-        <!--<h4 id="full_name" class="text-center mb-1"></h4>-->
-        <div id="roadmaps-container" class="roadmaps-grid"></div>
 
-        <!-- مكان تفاصيل الـ roadmap عند الضغط -->
+        <div class="controls-bar">
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="search-input" onkeyup="filterRoadmaps()" placeholder="Search careers...">
+            </div>
+            <div class="category-filters" id="category-filters">
+                <button class="filter-btn active" data-category="all" onclick="setCategory('all')">All</button>
+                <button class="filter-btn" data-category="software" onclick="setCategory('software')">Software</button>
+                <button class="filter-btn" data-category="devops" onclick="setCategory('devops')">DevOps</button>
+                <button class="filter-btn" data-category="security" onclick="setCategory('security')">Security</button>
+            </div>
+        </div>
+
+        <div id="roadmaps-container" class="roadmaps-grid"></div>
         <div id="roadmap-detail" class="roadmap-detail d-none"></div>
 
     </main>
@@ -88,7 +111,105 @@
     <div id="loader-overlay">
         <div class="spinner"></div>
     </div>
-    <script>async function loadRoadmaps() {
+
+    <script>
+
+        function generateMermaidSyntax(roadmap, isArabic) {
+
+            let graph = 'graph TD\n';
+
+            // --- Custom Aesthetics ---
+            graph += `classDef root fill:#1e293b,stroke:#fff,stroke-width:3px,color:#fff,font-size:20px,font-weight:bold,padding:20px;\n`;
+            graph += `classDef phase fill:#ffffff,stroke:#1e293b,stroke-width:2px,color:#1e293b,font-size:16px,font-weight:bold;\n`;
+            graph += `classDef required fill:#ffe500,stroke:#cca300,stroke-width:2px,color:#000,font-size:15px,font-weight:bold;\n`;
+            graph += `classDef optional fill:#f1f5f9,stroke:#cbd5e1,stroke-width:2px,color:#475569,font-size:14px;\n\n`;
+
+            const rootTitle = isArabic ? roadmap.title_ar : roadmap.title_en;
+            graph += `    Root(["${sanitizeHTML(rootTitle)}"]):::root\n\n`;
+
+            if (roadmap.steps && Array.isArray(roadmap.steps)) {
+                roadmap.steps.forEach((step, stepIndex) => {
+                    const stepId = `Step${stepIndex}`;
+                    const stepTitle = isArabic ? `مرحلة ${step.phase}: ${step.title_ar}` : `Phase ${step.phase}: ${step.title_en}`;
+
+                    graph += `    Root --> ${stepId}["${sanitizeHTML(stepTitle)}"]:::phase\n`;
+
+                    if (step.skills && Array.isArray(step.skills)) {
+                        step.skills.forEach((skill, skillIndex) => {
+                            const skillId = `Skill_${stepIndex}_${skillIndex}`;
+                            const skillName = isArabic ? skill.name_ar : skill.name_en;
+
+                            if (skill.required) {
+                                graph += `    ${stepId} --> ${skillId}["${sanitizeHTML(skillName)}"]:::required\n`;
+                            } else {
+                                const optionalLabel = isArabic ? '(اختياري)' : '(Optional)';
+                                graph += `    ${stepId} -.-> ${skillId}["${sanitizeHTML(skillName)}<br/><small style='font-weight:normal;'>${optionalLabel}</small>"]:::optional\n`;
+                            }
+                        });
+                    }
+                    graph += '\n';
+                });
+            }
+            return graph;
+        }
+
+        async function renderRoadmapDetail(roadmap) {
+            const detail = document.getElementById('roadmap-detail');
+            if (!detail) return;
+
+            const title = isArabic ? roadmap.title_ar : roadmap.title_en;
+            const desc = isArabic ? roadmap.description_ar : roadmap.description_en;
+
+            let html = `
+    <div class="roadmap-detail-header">
+        <div>
+            <div class="roadmap-detail-title">
+                <i class="fas ${roadmap.icon || 'fa-route'}" style="color:${roadmap.color || '#2196F3'}; margin-inline-end:.4rem;"></i>
+                ${sanitizeHTML(title)}
+            </div>
+            <div class="roadmap-detail-sub">${sanitizeHTML(desc)}</div>
+        </div>
+        <div>
+            ${roadmap.pdf ? `
+                <a href="${sanitizeHTML(roadmap.pdf)}" target="_blank" class="btn btn-sm btn-outline-primary" style="margin-inline-end:.5rem;">
+                    ${isArabic ? 'تحميل الخريطة PDF' : 'Download PDF'}
+                </a>
+            ` : ''}
+            <button class="roadmap-detail-close" onclick="document.getElementById('roadmap-detail').classList.add('d-none')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="roadmap-diagram-wrapper" style="overflow-x: auto; background: #ffffff; padding: 2rem; border-radius: 8px; margin-top: 1rem; border: 1px solid #e0e0e0; min-height: 400px; display: flex; justify-content: center;">
+        <div class="mermaid" id="mermaid-container">
+            ${generateMermaidSyntax(roadmap, isArabic)}
+        </div>
+    </div>
+    `;
+
+            detail.innerHTML = html;
+            detail.classList.remove('d-none');
+
+            try {
+                if (window.mermaid) {
+                    await window.mermaid.run({
+                        querySelector: '#mermaid-container'
+                    });
+                }
+            } catch (error) {
+                console.error("Failed to render roadmap diagram:", error);
+                document.getElementById('mermaid-container').innerHTML = `<div class="alert alert-danger">Failed to load diagram.</div>`;
+            }
+        }
+    </script>
+
+    <script>
+        // Global State Variables
+        let allRoadmaps = [];
+        let currentCategory = 'all';
+
+        async function loadRoadmaps() {
             const container = document.getElementById('roadmaps-container');
             const detail = document.getElementById('roadmap-detail');
             container.innerHTML = '';
@@ -101,37 +222,11 @@
                 const resp = await fetch('data/roadmaps.json');
                 if (!resp.ok) throw new Error(isArabic ? 'فشل جلب المسارات' : 'Failed to fetch roadmaps');
 
-                const roadmaps = await resp.json();
-                roadmaps.sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
+                allRoadmaps = await resp.json();
+                allRoadmaps.sort((a, b) => (a.display_order || 0) - (b.display_order || 0));
 
-                roadmaps.forEach((rm) => {
-                    const card = document.createElement('div');
-                    card.className = 'roadmap-card';
-                    const title = isArabic ? rm.title_ar : rm.title_en;
-                    const desc = isArabic ? rm.description_ar : rm.description_en;
-
-                    card.innerHTML = `
-                <div class="roadmap-card-title">
-                    <i class="fas ${rm.icon || 'fa-route'} roadmap-card-icon" style="color:${rm.color || '#2196F3'}"></i>
-                    <span>${sanitizeHTML(title)}</span>
-                </div>
-                <div class="roadmap-card-desc">${sanitizeHTML(desc)}</div>
-                <span class="roadmap-card-tag">
-                    ${isArabic ? 'مسار مهني' : 'Career Path'}
-                </span>
-            `;
-
-                    card.onclick = () => renderRoadmapDetail(rm);
-                    card.onkeydown = (e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            renderRoadmapDetail(rm);
-                        }
-                    };
-                    card.tabIndex = 0;
-
-                    container.appendChild(card);
-                });
+                // Call the filter function to render the initial state
+                filterRoadmaps();
             } catch (e) {
                 console.error(e);
                 container.innerHTML = `<div class="alert alert-danger">${sanitizeHTML(isArabic ? e.message : e.message)}</div>`;
@@ -139,62 +234,81 @@
                 document.getElementById('loader-overlay').style.display = 'none';
             }
         }
-    </script>
-    <script>function renderRoadmapDetail(roadmap) {
-            const detail = document.getElementById('roadmap-detail');
-            if (!detail) return;
 
-            const title = isArabic ? roadmap.title_ar : roadmap.title_en;
-            const desc = isArabic ? roadmap.description_ar : roadmap.description_en;
+        function setCategory(category) {
+            currentCategory = category;
 
-            let html = `
-        <div class="roadmap-detail-header">
-            <div>
-                <div class="roadmap-detail-title">
-                    <i class="fas ${roadmap.icon || 'fa-route'}" style="color:${roadmap.color || '#2196F3'}; margin-inline-end:.4rem;"></i>
-                    ${sanitizeHTML(title)}
-                </div>
-                <div style="font-size:.85rem; opacity:.85;">${sanitizeHTML(desc)}</div>
-            </div>
-            <button class="roadmap-detail-close" onclick="document.getElementById('roadmap-detail').classList.add('d-none')">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    `;
+            // Update active UI state on buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if (btn.dataset.category === category) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
 
-            if (Array.isArray(roadmap.steps)) {
-                roadmap.steps.forEach((step) => {
-                    const phaseTitle = isArabic ? step.title_ar : step.title_en;
-                    html += `
-                <div class="roadmap-phase">
-                    <div class="roadmap-phase-title">
-                        ${isArabic ? 'المرحلة' : 'Phase'} ${step.phase || ''}: ${sanitizeHTML(phaseTitle)}
-                    </div>
-            `;
+            filterRoadmaps();
+        }
 
-                    if (Array.isArray(step.skills)) {
-                        step.skills.forEach((sk) => {
-                            const name = isArabic ? sk.name_ar : sk.name_en;
-                            html += `
-                        <div class="roadmap-skill">
-                            <i class="fas fa-circle" style="font-size:.4rem;"></i>
-                            <span>${sanitizeHTML(name)}</span>
-                            <span class="${sk.required ? 'roadmap-skill-required' : 'roadmap-skill-optional'}">
-                                ${sk.required ? (isArabic ? 'أساسي' : 'Required') : (isArabic ? 'اختياري' : 'Optional')}
-                            </span>
-                        </div>
-                    `;
-                        });
-                    }
+        function filterRoadmaps() {
+            const container = document.getElementById('roadmaps-container');
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            container.innerHTML = '';
 
-                    html += `</div>`;
-                });
+            // Hide details panel when searching/filtering
+            document.getElementById('roadmap-detail').classList.add('d-none');
+
+            // Filter the array based on search text AND selected category
+            const filteredData = allRoadmaps.filter(rm => {
+                const matchCategory = currentCategory === 'all' || rm.category === currentCategory;
+                const searchTarget = isArabic ? (rm.title_ar || '') : (rm.title_en || '');
+                const matchSearch = searchTarget.toLowerCase().includes(searchTerm);
+
+                return matchCategory && matchSearch;
+            });
+
+            // Handle empty state (no matches)
+            if (filteredData.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #6c757d;">
+                        <i class="fas fa-search fa-2x mb-2" style="opacity: 0.5;"></i>
+                        <p>${isArabic ? 'لم يتم العثور على مسارات تطابق بحثك.' : 'No career paths match your search.'}</p>
+                    </div>`;
+                return;
             }
 
-            detail.innerHTML = html;
-            detail.classList.remove('d-none');
+            // Draw the filtered cards
+            filteredData.forEach((rm) => {
+                const card = document.createElement('div');
+                card.className = 'roadmap-card';
+                const title = isArabic ? rm.title_ar : rm.title_en;
+                const desc = isArabic ? rm.description_ar : rm.description_en;
+
+                card.innerHTML = `
+                    <div class="roadmap-card-title">
+                        <i class="fas ${rm.icon || 'fa-route'} roadmap-card-icon" style="color:${rm.color || '#2196F3'}"></i>
+                        <span>${sanitizeHTML(title)}</span>
+                    </div>
+                    <div class="roadmap-card-desc">${sanitizeHTML(desc)}</div>
+                    <span class="roadmap-card-tag">
+                        ${isArabic ? 'مسار مهني' : 'Career Path'}
+                    </span>
+                `;
+
+                card.onclick = () => renderRoadmapDetail(rm);
+                card.onkeydown = (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        renderRoadmapDetail(rm);
+                    }
+                };
+                card.tabIndex = 0;
+
+                container.appendChild(card);
+            });
         }
     </script>
+
     <script>
         let lang, isArabic;
         let currentMode = 'default';
@@ -351,11 +465,16 @@
             document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
             document.getElementById('language-switcher').classList.add('active');
             updateLanguage();
-            loadRoadmaps();
+            // Changed from loadRoadmaps() to filterRoadmaps() since data is already in memory
+            if (allRoadmaps.length > 0) {
+                filterRoadmaps();
+            } else {
+                loadRoadmaps();
+            }
         }
 
         function updateLanguage() {
-            document.getElementById('title').textContent = isArabic ? 'أدلة جامعة الباحة' : 'Albaha University Guides';
+            document.getElementById('title').textContent = isArabic ? 'المسارات المهنية' : 'Career paths';
             const labels = document.querySelectorAll('.sidebar ul li span');
             labels[0].textContent = isArabic ? 'الوضع الافتراضي' : 'Default Mode';
             labels[1].textContent = isArabic ? 'الوضع الرمادي' : 'Grayscale Mode';
@@ -365,8 +484,30 @@
             labels[5].textContent = isArabic ? 'زيادة الحجم' : 'Increase Size';
             labels[6].textContent = isArabic ? 'تقليل الحجم' : 'Decrease Size';
             labels[7].textContent = isArabic ? 'إعادة تعيين الحجم' : 'Reset Size';
+
+            // Filter button texts
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            if (filterButtons.length >= 4) {
+                filterButtons[0].textContent = isArabic ? 'كل المسارات' : 'All';
+                filterButtons[1].textContent = isArabic ? 'تطوير برمجيات' : 'Software';
+                filterButtons[2].textContent = isArabic ? 'أمن سيبراني' : 'Security';
+                // Added a fallback for the text based on your previous config
+                filterButtons[3].textContent = isArabic ? 'DevOps وبنية تحتية' : 'DevOps & Infra';
+            }
+
+            // Search input placeholder
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.placeholder = isArabic ? 'ابحث عن مسار مهني...' : 'Search career paths...';
+            }
+
             document.getElementById('copyright-ar').style.display = isArabic ? 'inline' : 'none';
             document.getElementById('copyright-en').style.display = isArabic ? 'none' : 'inline';
+
+            // Re-render UI if data exists
+            if (typeof allRoadmaps !== 'undefined' && allRoadmaps.length > 0) {
+                filterRoadmaps();
+            }
         }
 
         function increaseSize() {
@@ -394,7 +535,9 @@
         }
 
         async function fetchFileList() {
+            // Note: This function remains as you had it for downloading files via TWK API
             const fileListDiv = document.getElementById('file-list');
+            if (!fileListDiv) return; // Prevent error if file-list is removed
             fileListDiv.innerHTML = '';
             document.getElementById('loader-overlay').style.display = 'flex';
 
@@ -426,9 +569,6 @@
                 fullNameAr = fullNameResponse.result.full_name_ar;
                 fullNameEn = fullNameResponse.result.full_name_en;
 
-                // Set full name based on language
-                //document.getElementById('full_name').textContent = sanitizeHTML(isArabic ? 'مرحباً '+fullNameAr : 'Welcome '+fullNameEn);
-
                 // Fetch device info for language and appearance
                 const deviceInfo = await TWK.getDeviceInfo();
                 if (!deviceInfo || !deviceInfo.success || !deviceInfo.result) {
@@ -440,7 +580,6 @@
                 status = 'error';
                 errorMessage = e.message;
                 console.error('Error fetching TWK data:', e.message);
-                //document.getElementById('full_name').textContent = sanitizeHTML(isArabic ? 'خطأ: فشل جلب الاسم' : 'Error: Failed to fetch name');
             }
             let gender = '';
             try {
@@ -559,7 +698,9 @@
             } catch (error) {
                 console.error('Error preparing file navigation:', error.message, 'URL:', actualName);
                 const fileListDiv = document.getElementById('file-list');
-                fileListDiv.innerHTML = `<div class="alert alert-danger">${sanitizeHTML(isArabic ? `تعذر فتح الملف: ${error.message}` : `Unable to open the file: ${error.message}`)}</div>`;
+                if (fileListDiv) {
+                    fileListDiv.innerHTML = `<div class="alert alert-danger">${sanitizeHTML(isArabic ? `تعذر فتح الملف: ${error.message}` : `Unable to open the file: ${error.message}`)}</div>`;
+                }
             } finally {
                 document.getElementById('loader-overlay').style.display = 'none';
             }
@@ -595,7 +736,8 @@
                 pullToRefresh.style.transform = 'translateY(0)';
                 if (pullDistance >= pullThreshold) {
                     document.getElementById('loader-overlay').style.display = 'flex';
-                    fetchFileList().finally(() => {
+                    // We call loadRoadmaps on refresh instead of fetchFileList here
+                    loadRoadmaps().finally(() => {
                         document.getElementById('loader-overlay').style.display = 'none';
                     });
                 }
@@ -615,7 +757,6 @@
                 pdfjsLib.GlobalWorkerOptions.workerSrc = 'js/pdf.worker.min.js';
             } catch (e) {
                 console.error('PDF.js failed to load:', e);
-                document.getElementById('file-list').innerHTML = `<div class="alert alert-danger">${sanitizeHTML(isArabic ? 'خطأ في تحميل مكتبة PDF' : 'Failed to load PDF library')}</div>`;
             }
 
             try {
@@ -636,13 +777,6 @@
                     setMode('default');
                 }
 
-                // Fetch and set full name
-                const fullNameResponse = await TWK.V2.getUserFullName();
-                if (fullNameResponse && fullNameResponse.success && fullNameResponse.result && fullNameResponse.result.full_name_ar && fullNameResponse.result.full_name_en) {
-                    //document.getElementById('full_name').textContent = sanitizeHTML(isArabic ? fullNameResponse.result.full_name_ar : fullNameResponse.result.full_name_en);
-                } else {
-                    //document.getElementById('full_name').textContent = sanitizeHTML(isArabic ? 'خطأ: فشل جلب الاسم' : 'Error: Failed to fetch name');
-                }
             } catch (e) {
                 console.error('Failed to get device info or full name:', e);
                 lang = 'ar';
@@ -650,7 +784,6 @@
                 localStorage.setItem('language', lang);
                 localStorage.setItem('accessibilityMode', 'default');
                 setMode('default');
-                //document.getElementById('full_name').textContent = sanitizeHTML(isArabic ? 'خطأ: فشل جلب الاسم' : 'Error: Failed to fetch name');
             }
 
             // Apply saved mode if it exists to allow user override
@@ -671,7 +804,7 @@
             document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
 
             updateLanguage();
-            //handlePullToRefresh();
+            handlePullToRefresh(); // Note: updated to refresh roadmaps instead of files
             await loadRoadmaps();
 
         });
