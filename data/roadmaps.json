@@ -16,7 +16,7 @@
         "title_ar": "الأساسيات",
         "title_en": "Fundamentals",
         "skills": [
-          { "name_ar": "منطق البرمجة", "name_en": "Programming logic", "required": true },
+          { "name_ar": "منطق البرمجة", "name_en": "Programming logic", "required": true ,"link": "https://www.coursera.org/learn/computer-networking" },
           { "name_ar": "لغة برمجة (Python/JS)", "name_en": "Programming language (Python/JS)", "required": true }
         ]
       },
