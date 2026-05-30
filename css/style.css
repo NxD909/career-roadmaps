@@ -856,3 +856,51 @@
      border-color: #3182ce;
      color: #fff;
  }
+
+
+ /* Step 3: Add CSS for the Grabbing Cursor To make it feel like a professional map,
+ let's make the cursor change to a "grab" hand when the user hovers over the diagram. Add this tiny block of CSS anywhere inside your `<style>` tag or your `style.css` file:
+ */
+
+ #mermaid-container {
+     cursor: grab;
+     touch-action: none;
+     /* Prevents the whole webpage from bouncing when zooming on mobile */
+ }
+
+ #mermaid-container:active {
+     cursor: grabbing;
+ }
+
+ /* Make nodes with links look clickable */
+ .node.clickable {
+     cursor: pointer !important;
+ }
+
+ .node.clickable:hover {
+     filter: brightness(0.9);
+     transition: filter 0.2s ease;
+ }
+
+ /* Styling for Mermaid clickable nodes */
+ .clickable {
+     cursor: pointer !important;
+     transition: filter 0.2s ease !important;
+ }
+
+ /* Make it glow and darken slightly when hovered */
+ .clickable:hover {
+     filter: drop-shadow(0px 6px 8px rgba(0, 162, 255, 0.2)) brightness(0.9) !important;
+ }
+
+ /* Fix text selection bug when panning/zooming */
+ .clickable text {
+     user-select: none;
+ }
+
+ /* Nuke the annoying stray pink square from Mermaid */
+ .edgeLabel,
+ .edgeLabel rect {
+     background-color: transparent !important;
+     opacity: 0 !important;
+ }
