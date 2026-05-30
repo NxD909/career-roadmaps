@@ -15,6 +15,7 @@
     <script src="constants.js"></script>
     <script src="js/pdf.min.js"></script>
     <script src="js/mermaid.min.js"></script>
+    <script src="https://unpkg.com/panzoom@9.4.3/dist/panzoom.min.js"></script>
 
     <script>
         // Initialize Mermaid globally
@@ -30,6 +31,7 @@
             }
         });
     </script>
+
 </head>
 
 <body class="bg-light">
@@ -139,11 +141,24 @@
                             const skillId = `Skill_${stepIndex}_${skillIndex}`;
                             const skillName = isArabic ? skill.name_ar : skill.name_en;
 
+                            // --- NEW VISUAL INDICATOR LOGIC ---
+                            // If a link exists, append a small FontAwesome icon to the label
+                            let finalLabel = sanitizeHTML(skillName);
+                            if (skill.link) {
+                                finalLabel += ` <i class='fas fa-external-link-alt' style='color: inherit; font-size:0.85em; opacity:0.8; margin-inline-start:4px;'></i>`;
+                            }
+
+                            // Draw the node using the new finalLabel
                             if (skill.required) {
-                                graph += `    ${stepId} --> ${skillId}["${sanitizeHTML(skillName)}"]:::required\n`;
+                                graph += `    ${stepId} --> ${skillId}["${finalLabel}"]:::required\n`;
                             } else {
                                 const optionalLabel = isArabic ? '(اختياري)' : '(Optional)';
-                                graph += `    ${stepId} -.-> ${skillId}["${sanitizeHTML(skillName)}<br/><small style='font-weight:normal;'>${optionalLabel}</small>"]:::optional\n`;
+                                graph += `    ${stepId} -.-> ${skillId}["${finalLabel}<br/><small style='font-weight:normal;'>${optionalLabel}</small>"]:::optional\n`;
+                            }
+
+                            // Make the node clickable
+                            if (skill.link) {
+                                graph += `    click ${skillId} "${skill.link}" "Learn more" _blank\n`;
                             }
                         });
                     }
@@ -196,10 +211,35 @@
                     await window.mermaid.run({
                         querySelector: '#mermaid-container'
                     });
+
+                    // Give the browser 100 milliseconds to finish painting the SVG
+                    setTimeout(() => {
+                        const svgElement = document.querySelector('#mermaid-container svg');
+
+                        if (svgElement && typeof panzoom !== 'undefined') {
+                            // Override Mermaid's strict height/width limits
+                            svgElement.style.maxWidth = 'none';
+                            svgElement.style.width = '100%';
+                            svgElement.style.height = 'auto';
+                            svgElement.style.overflow = 'visible';
+
+                            // Initialize Panzoom with looser restrictions
+                            panzoom(svgElement, {
+                                maxZoom: 5,
+                                minZoom: 0.1,  // Allow zooming out much further
+                                bounds: false, // Turn off bounds temporarily so it can move freely
+                                smoothScroll: false // Helps prevent trackpad stuttering
+                            });
+
+                            console.log("Panzoom successfully attached!");
+                        } else {
+                            console.warn("Could not attach Panzoom. SVG found:", !!svgElement, "Panzoom loaded:", typeof panzoom !== 'undefined');
+                        }
+                    }, 100); // 100ms delay
                 }
             } catch (error) {
                 console.error("Failed to render roadmap diagram:", error);
-                document.getElementById('mermaid-container').innerHTML = `<div class="alert alert-danger">Failed to load diagram.</div>`;
+                document.getElementById('mermaid-container').innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
             }
         }
     </script>
