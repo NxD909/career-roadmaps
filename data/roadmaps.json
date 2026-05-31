@@ -102,7 +102,287 @@
           { "name_ar": "مفاهيم التشفير", "name_en": "Cryptography basics", "required": false },
           { "name_ar": "تهديدات شائعة", "name_en": "Common threats", "required": true }
         ]
+        
+      }
+    ]
+  },
+  {
+    "id": "fullstack_web_dev",
+    "display_order": 2,
+    "category": "software",
+    "icon": "fa-layer-group",
+    "color": "#8B5CF6",
+    "title_ar": "مطور ويب شامل",
+    "title_en": "Full-Stack Web Developer",
+    "description_ar": "مسار احترافي لبناء تطبيقات الويب من الصفر، يشمل تصميم الواجهات وبرمجة الخوادم وقواعد البيانات.",
+    "description_en": "A professional path to building web applications from scratch, covering frontend design, backend servers, and databases.",
+    "steps": [
+      {
+        "phase": 1,
+        "title_ar": "أساسيات الواجهات الأمامية",
+        "title_en": "Frontend Basics",
+        "skills": [
+          {
+            "name_ar": "HTML & CSS",
+            "name_en": "HTML & CSS",
+            "required": true
+          },
+          {
+            "name_ar": "جافاسكربت",
+            "name_en": "JavaScript",
+            "required": true
+          }
+        ]
+      },
+      {
+        "phase": 2,
+        "title_ar": "أطر عمل الواجهات الأمامية",
+        "title_en": "Frontend Frameworks",
+        "skills": [
+          {
+            "name_ar": "مكتبة React",
+            "name_en": "React.js",
+            "required": true
+          },
+          {
+            "name_ar": "إدارة الحالة (Redux)",
+            "name_en": "State Management (Redux)",
+            "required": false
+          }
+        ]
+      },
+      {
+        "phase": 3,
+        "title_ar": "الخوادم وقواعد البيانات",
+        "title_en": "Backend & Databases",
+        "skills": [
+          {
+            "name_ar": "لغة PHP وإطار عمل Laravel",
+            "name_en": "PHP & Laravel Framework",
+            "required": true
+          },
+          {
+            "name_ar": "قواعد بيانات MySQL",
+            "name_en": "MySQL Databases",
+            "required": true
+          },
+          {
+            "name_ar": "بنية MVC",
+            "name_en": "MVC Architecture",
+            "required": true
+          }
+        ]
+      },
+      {
+        "phase": 4,
+        "title_ar": "التحكم في الإصدارات",
+        "title_en": "Version Control",
+        "skills": [
+          {
+            "name_ar": "Git & GitHub",
+            "name_en": "Git & GitHub",
+            "required": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cybersecurity_specialist",
+    "display_order": 3,
+    "category": "security",
+    "icon": "fa-shield-halved",
+    "color": "#EF4444",
+    "title_ar": "أخصائي أمن سيبراني",
+    "title_en": "Cybersecurity Specialist",
+    "description_ar": "مسار مخصص لحماية الأنظمة والشبكات والبيانات من الهجمات الرقمية واكتشاف الثغرات.",
+    "description_en": "A path dedicated to protecting systems, networks, and data from digital attacks and discovering vulnerabilities.",
+    "steps": [
+      {
+        "phase": 1,
+        "title_ar": "أساسيات تقنية المعلومات",
+        "title_en": "IT Fundamentals",
+        "skills": [
+          {
+            "name_ar": "أساسيات الشبكات",
+            "name_en": "Networking Basics",
+            "required": true
+          },
+          {
+            "name_ar": "إدارة نظام لينكس",
+            "name_en": "Linux Administration",
+            "required": true
+          }
+        ]
+      },
+      {
+        "phase": 2,
+        "title_ar": "مبادئ الأمن السيبراني",
+        "title_en": "Security Principles",
+        "skills": [
+          {
+            "name_ar": "التشفير",
+            "name_en": "Cryptography",
+            "required": true
+          },
+          {
+            "name_ar": "إدارة المخاطر",
+            "name_en": "Risk Management",
+            "required": true
+          }
+        ]
+      },
+      {
+        "phase": 3,
+        "title_ar": "الأمن الهجومي والدفاعي",
+        "title_en": "Offensive & Defensive Security",
+        "skills": [
+          {
+            "name_ar": "اختبار الاختراق",
+            "name_en": "Penetration Testing",
+            "required": true
+          },
+          {
+            "name_ar": "القرصنة الأخلاقية",
+            "name_en": "Ethical Hacking",
+            "required": true
+          },
+          {
+            "name_ar": "التحليل الجنائي الرقمي",
+            "name_en": "Digital Forensics",
+            "required": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ui_ux_designer",
+    "display_order": 4,
+    "category": "software",
+    "icon": "fa-palette",
+    "color": "#EC4899",
+    "title_ar": "مصمم واجهات وتجربة المستخدم",
+    "title_en": "UI/UX Designer",
+    "description_ar": "مسار إبداعي يركز على تصميم الجماليات البصرية وبناء تجارب استخدام مريحة وفعالة للتطبيقات.",
+    "description_en": "A creative path focusing on designing visual aesthetics and building comfortable, effective user experiences for applications.",
+    "steps": [
+      {
+        "phase": 1,
+        "title_ar": "أساسيات التصميم",
+        "title_en": "Design Fundamentals",
+        "skills": [
+          {
+            "name_ar": "نظرية الألوان والطباعة",
+            "name_en": "Color Theory & Typography",
+            "required": true
+          },
+          {
+            "name_ar": "التسلسل الهرمي البصري",
+            "name_en": "Visual Hierarchy",
+            "required": true
+          }
+        ]
+      },
+      {
+        "phase": 2,
+        "title_ar": "تجربة المستخدم (UX)",
+        "title_en": "User Experience (UX)",
+        "skills": [
+          {
+            "name_ar": "التخطيط الشبكي (Wireframing)",
+            "name_en": "Wireframing",
+            "required": true
+          },
+          {
+            "name_ar": "أبحاث المستخدمين",
+            "name_en": "User Research",
+            "required": true
+          }
+        ]
+      },
+      {
+        "phase": 3,
+        "title_ar": "أدوات التصميم",
+        "title_en": "Design Tools",
+        "skills": [
+          {
+            "name_ar": "Figma",
+            "name_en": "Figma",
+            "required": true
+          },
+          {
+            "name_ar": "تصميم النماذج الأولية (Prototyping)",
+            "name_en": "Prototyping",
+            "required": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ai_algorithm_engineer",
+    "display_order": 5,
+    "category": "software",
+    "icon": "fa-brain",
+    "color": "#10B981",
+    "title_ar": "مهندس خوارزميات وذكاء اصطناعي",
+    "title_en": "AI & Algorithm Engineer",
+    "description_ar": "مسار متقدم يركز على الرياضيات، وهياكل البيانات، وبناء خوارزميات البحث وتعلم الآلة.",
+    "description_en": "An advanced path focusing on mathematics, data structures, building search algorithms, and machine learning.",
+    "steps": [
+      {
+        "phase": 1,
+        "title_ar": "الرياضيات المتقدمة والمنطق",
+        "title_en": "Advanced Math & Logic",
+        "skills": [
+          {
+            "name_ar": "التفاضل والتكامل والجبر الخطي",
+            "name_en": "Calculus & Linear Algebra",
+            "required": true
+          },
+          {
+            "name_ar": "الاحتمالات والإحصاء",
+            "name_en": "Probability & Statistics",
+            "required": true
+          }
+        ]
+      },
+      {
+        "phase": 2,
+        "title_ar": "أساسيات الخوارزميات",
+        "title_en": "Algorithm Fundamentals",
+        "skills": [
+          {
+            "name_ar": "خوارزميات البحث (BFS, DFS, A*)",
+            "name_en": "Search Algorithms (BFS, DFS, A*)",
+            "required": true
+          },
+          {
+            "name_ar": "هياكل البيانات المتقدمة",
+            "name_en": "Advanced Data Structures",
+            "required": true
+          }
+        ]
+      },
+      {
+        "phase": 3,
+        "title_ar": "تعلم الآلة والنمذجة",
+        "title_en": "Machine Learning & Modeling",
+        "skills": [
+          {
+            "name_ar": "برمجة بايثون للبيانات",
+            "name_en": "Python for Data",
+            "required": true
+          },
+          {
+            "name_ar": "الشبكات العصبية",
+            "name_en": "Neural Networks",
+            "required": true
+          }
+        ]
       }
     ]
   }
 ]
+
