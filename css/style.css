@@ -904,3 +904,200 @@
      background-color: transparent !important;
      opacity: 0 !important;
  }
+
+ /* Restructure filter bar to be completely static and wrap cleanly */
+ .category-filters {
+     display: flex !important;
+     flex-wrap: wrap !important;
+     /* Allows buttons to wrap to a second line on small phones */
+     justify-content: center !important;
+     /* Centers the buttons on the screen */
+     gap: 8px !important;
+     /* Adds uniform spacing between buttons */
+     overflow-x: visible !important;
+     /* Forces the hidden overflow scroll mechanism away */
+     padding-bottom: 0 !important;
+     /* Clears padding space left over for scrollbars */
+     border: none !important;
+ }
+
+ /* Ensure individual buttons scale natively without horizontal scroll snapping */
+ .filter-btn {
+     white-space: nowrap !important;
+     /* Keeps the text on a single line inside the button */
+     flex: 0 1 auto !important;
+     /* Dynamically sizing based on word length instead of squeezing */
+ }
+
+ /* Hide any dynamic scrollbar tracks globally on Webkit engines just in case */
+ .category-filters::-webkit-scrollbar {
+     display: none !important;
+     width: 0 !important;
+     height: 0 !important;
+ }
+
+
+ /* --- NATIVE ROADMAP.SH CLONE STYLES --- */
+ .rn-container {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     position: relative;
+     padding: 1rem 0 3rem 0;
+     width: 100%;
+ }
+
+ .rn-spine {
+     position: absolute;
+     top: 0;
+     bottom: 0;
+     left: 50%;
+     width: 4px;
+     background-color: #cbd5e1;
+     transform: translateX(-50%);
+     z-index: 0;
+ }
+
+ .rn-root {
+     background-color: #1e293b;
+     color: #fff;
+     padding: 1rem 2rem;
+     border-radius: 50px;
+     font-weight: bold;
+     font-size: 1.2rem;
+     z-index: 2;
+     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+     text-align: center;
+ }
+
+ .rn-phase-container {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     width: 100%;
+     margin-top: 2.5rem;
+     z-index: 1;
+ }
+
+ .rn-phase {
+     background-color: #fff;
+     color: #1e293b;
+     border: 2px solid #1e293b;
+     padding: 0.5rem 1.5rem;
+     border-radius: 8px;
+     font-weight: bold;
+     font-size: 1.1rem;
+     z-index: 2;
+     margin-bottom: 2rem;
+     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+     text-align: center;
+ }
+
+ .rn-skills-wrapper {
+     width: 100%;
+     max-width: 600px;
+     display: flex;
+     flex-direction: column;
+     gap: 1.5rem;
+     position: relative;
+ }
+
+ .rn-skill-row {
+     display: flex;
+     width: 100%;
+     position: relative;
+     box-sizing: border-box;
+ }
+
+ /* CSS for straight diagram */
+ /* Right Side Node Layout */
+ .rn-right {
+     padding-left: 50%;
+ }
+
+ .rn-right .rn-branch {
+     left: 50%;
+ }
+
+ .rn-right .rn-skill-box {
+     margin-left: 15px;
+ }
+
+ /* Left Side Node Layout */
+ .rn-left {
+     padding-right: 50%;
+     justify-content: flex-end;
+ }
+
+ .rn-left .rn-branch {
+     right: 50%;
+ }
+
+ .rn-left .rn-skill-box {
+     margin-right: 15px;
+ }
+
+ /* The Horizontal Branch Line */
+ .rn-branch {
+     position: absolute;
+     top: 50%;
+     transform: translateY(-50%);
+     width: 15px;
+     height: 4px;
+     background-color: #cbd5e1;
+     z-index: 0;
+ }
+
+ /* The Skill Box */
+ .rn-skill-box {
+     width: calc(100% - 15px);
+     padding: 0.75rem 1rem;
+     border-radius: 8px;
+     font-size: 0.95rem;
+     text-align: center;
+     z-index: 2;
+     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+     box-sizing: border-box;
+ }
+
+ /* Status Colors & Interactions */
+ .rn-req {
+     background: #ffe500;
+     border: 2px solid #cca300;
+     color: #000;
+     font-weight: bold;
+ }
+
+ .rn-opt {
+     background: #f1f5f9;
+     border: 2px solid #cbd5e1;
+     color: #475569;
+ }
+
+ .rn-clickable {
+     cursor: pointer;
+     transition: transform 0.2s, filter 0.2s;
+ }
+
+ .rn-clickable:hover {
+     transform: scale(1.05);
+     filter: brightness(0.95);
+ }
+
+ /* Dark Mode Overrides */
+ .dark-mode .rn-phase {
+     background: #1e293b;
+     border-color: #cbd5e1;
+     color: #fff;
+ }
+
+ .dark-mode .rn-opt {
+     background: #334155;
+     border-color: #475569;
+     color: #f8fafc;
+ }
+
+ .dark-mode .rn-spine,
+ .dark-mode .rn-branch {
+     background-color: #475569;
+ }
