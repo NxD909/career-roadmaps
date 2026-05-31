@@ -25,7 +25,7 @@
         "title_ar": "هياكل البيانات والخوارزميات",
         "title_en": "Data Structures & Algorithms",
         "skills": [
-          { "name_ar": "هياكل البيانات", "name_en": "Data Structures", "required": true },
+          { "name_ar": "هياكل البيانات", "name_en": "Data Structures", "required": true ,"link": "https://www.coursera.org/learn/computer-networking" },
           { "name_ar": "الخوارزميات الأساسية", "name_en": "Basic Algorithms", "required": true }
         ]
       },
@@ -50,7 +50,6 @@
     "color": "#2196F3",
     "description_ar": "مسار لربط التطوير بالتشغيل والأتمتة.",
     "description_en": "Path to connect development with operations & automation.",
-    "pdf": "roadmaps/devops.pdf",
     "display_order": 2,
     "steps": [
       {
@@ -323,7 +322,7 @@
   {
     "id": "ai_algorithm_engineer",
     "display_order": 5,
-    "category": "software",
+    "category": "ai",
     "icon": "fa-brain",
     "color": "#10B981",
     "title_ar": "مهندس خوارزميات وذكاء اصطناعي",
