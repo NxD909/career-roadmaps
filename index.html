@@ -669,6 +669,8 @@
         }
 
         function updateLanguage() {
+            // Dynamically update the browser tab title
+            document.title = isArabic ? '  المسارات المهنية' : ' Career Paths';
             document.getElementById('title').textContent = isArabic ? 'المسارات المهنية' : 'Career paths';
             const labels = document.querySelectorAll('.sidebar ul li span');
             labels[0].textContent = isArabic ? 'الوضع الافتراضي' : 'Default Mode';
