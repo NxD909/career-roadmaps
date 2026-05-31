@@ -1250,3 +1250,68 @@
      background-color: rgba(154, 52, 18, 0.3);
      color: #fb923c;
  }
+
+
+
+
+
+
+ /* --- Ultimate Search Bar Layout Fix --- */
+ .search-container {
+     position: relative !important;
+     display: flex !important;
+     align-items: center !important;
+     width: 100% !important;
+ }
+
+ /* Ensure padding on BOTH sides so text never hits either icon */
+ .search-container input {
+     width: 100% !important;
+     padding-left: 2.5rem !important;
+     padding-right: 2.5rem !important;
+ }
+
+ /* Make both icons float above the input */
+ .search-icon,
+ .clear-search-icon {
+     position: absolute !important;
+     z-index: 2 !important;
+ }
+
+ /* Hover effects for the X button */
+ .clear-search-icon {
+     cursor: pointer;
+     color: #94a3b8;
+     transition: color 0.2s;
+ }
+
+ .clear-search-icon:hover {
+     color: #64748b;
+ }
+
+ .dark-mode .clear-search-icon:hover {
+     color: #cbd5e1;
+ }
+
+
+ /* --- English (LTR) Layout: Magnifier Left, X Right --- */
+ html[dir="ltr"] .search-icon {
+     left: 12px !important;
+     right: auto !important;
+ }
+
+ html[dir="ltr"] .clear-search-icon {
+     right: 12px !important;
+     left: auto !important;
+ }
+
+ /* --- Arabic (RTL) Layout: Magnifier Right, X Left --- */
+ html[dir="rtl"] .search-icon {
+     right: 12px !important;
+     left: auto !important;
+ }
+
+ html[dir="rtl"] .clear-search-icon {
+     left: 12px !important;
+     right: auto !important;
+ }
