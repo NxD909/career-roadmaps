@@ -90,6 +90,8 @@
             <div class="search-container">
                 <i class="fas fa-search search-icon"></i>
                 <input type="text" id="search-input" onkeyup="filterRoadmaps()" placeholder="Search careers...">
+                <i class="fas fa-times-circle clear-search-icon" id="clear-search" onclick="clearSearchInput()"
+                    style="display: none;"></i>
             </div>
             <div class="category-filters" id="category-filters">
                 <button class="filter-btn active" data-category="all" onclick="setCategory('all')">All</button>
@@ -326,6 +328,12 @@
         function setCategory(category) {
             currentCategory = category;
 
+            // Clear out the search input completely when swapping category tabs
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.value = '';
+            }
+
             // Update active UI state on buttons
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 if (btn.dataset.category === category) {
@@ -335,16 +343,33 @@
                 }
             });
 
-            filterRoadmaps();
+            filterRoadmaps(); // This will automatically hide the "X" icon and show all cards in this category
+        }
+        function clearSearchInput() {
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.value = '';
+                searchInput.focus(); // Keeps the cursor active in the input box for convenience
+            }
+            filterRoadmaps(); // Forces the UI grid to reload instantly without text constraints
         }
 
         function filterRoadmaps() {
             const container = document.getElementById('roadmaps-container');
             const detailPanel = document.getElementById('roadmap-detail');
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const searchInput = document.getElementById('search-input');
+            const searchTerm = searchInput.value.toLowerCase();
+            const clearIcon = document.getElementById('clear-search');
+
+            // Toggle visibility of the "X" icon based on text input
+            if (clearIcon) {
+                clearIcon.style.display = searchTerm.length > 0 ? 'block' : 'none';
+            }
 
             // Rescue the detail panel by moving it back to the main container before wiping the grid
             document.querySelector('main.container').appendChild(detailPanel);
+
+            // ... the rest of your original filter logic continues exactly the same ...
 
             container.innerHTML = '';
 
