@@ -16,7 +16,7 @@
     <script src="js/pdf.min.js"></script>
     <script src="js/mermaid.min.js"></script>
     <script src="js/panzoom.min.js"></script>
-    <script src="js/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
 
     <script>
         // Initialize Mermaid globally
@@ -130,18 +130,21 @@
             if (btn) btn.className = 'fas fa-spinner fa-spin';
 
             try {
-                // Take a high-res screenshot of the HTML structure
-                const canvas = await html2canvas(targetElement, {
-                    scale: 2, // 2x resolution for crisp text
+                // Using html-to-image to bypass rendering bugs
+                const dataUrl = await htmlToImage.toPng(targetElement, {
+                    pixelRatio: 2, // 2x resolution for crisp text
                     backgroundColor: document.body.classList.contains('dark-mode') ? '#1e293b' : '#ffffff',
-                    useCORS: true // Ensures icons load correctly in the image
+                    style: {
+                        transform: 'scale(1)',
+                        transformOrigin: 'top left'
+                    }
                 });
 
                 // Convert to a downloadable PNG file
                 const link = document.createElement("a");
                 const fileName = roadmapId ? roadmapId : "roadmap";
                 link.download = `${fileName}.png`;
-                link.href = canvas.toDataURL("image/png");
+                link.href = dataUrl;
 
                 document.body.appendChild(link);
                 link.click();
