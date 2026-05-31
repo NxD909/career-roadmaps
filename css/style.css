@@ -295,6 +295,28 @@
      --separator-color: #a0a0a0;
  }
 
+ /* --- The True Grayscale Fix (Protects Fixed Overlays) --- */
+ body.grayscale-mode>*:not(#overlay):not(#loader-overlay) {
+     filter: grayscale(100%) !important;
+     -webkit-filter: grayscale(100%) !important;
+ }
+
+ /* --- 1. Light Mode Hover (Deep Sky) --- */
+ /* The :not(.dark-mode) ensures this NEVER triggers in dark mode */
+ body:not(.dark-mode) .header-container .toggle-btn:hover {
+     background-color: #0284c7 !important;
+     border-color: #0284c7 !important;
+     color: #ffffff !important;
+     /* Keeps the three dots crisp white */
+ }
+
+ /* --- 2. Dark Mode Hover (Glassy White) --- */
+ /* This brings back the elegant, native-looking translucent hover for dark mode */
+ body.dark-mode .header-container .toggle-btn:hover {
+     background-color: rgba(255, 255, 255, 0.15) !important;
+     border-color: rgba(255, 255, 255, 0.5) !important;
+ }
+
  .grayscale-mode img.logo,
  .grayscale-mode .pdf-page {
      filter: grayscale(100%);
@@ -1100,4 +1122,131 @@
  .dark-mode .rn-spine,
  .dark-mode .rn-branch {
      background-color: #475569;
+ }
+
+ /* --- Active Roadmap Card Highlight --- */
+ .roadmap-card {
+     transition: all 0.2s ease-in-out;
+     /* Smooth transition for the press effect */
+ }
+
+ .roadmap-card.active-roadmap {
+     border: 2px solid #2196F3 !important;
+     box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.15) !important;
+     background-color: #f0f9ff;
+     transform: scale(0.98);
+     /* Gives it that physical "pressed down" feeling */
+ }
+
+ /* Dark Mode Support */
+ .dark-mode .roadmap-card.active-roadmap {
+     border-color: #38bdf8 !important;
+     box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15) !important;
+     background-color: #0f172a;
+ }
+
+ /* --- Accordion Layout for Mobile --- */
+ #roadmap-detail {
+     grid-column: 1 / -1;
+     /* Forces the panel to span all columns in a grid */
+     width: 100%;
+     margin-top: 1rem;
+     margin-bottom: 2rem;
+     animation: slideDown 0.25s ease-out;
+     /* Smooth pop-in effect */
+     transform-origin: top;
+ }
+
+ @keyframes slideDown {
+     from {
+         opacity: 0;
+         transform: scaleY(0.95);
+     }
+
+     to {
+         opacity: 1;
+         transform: scaleY(1);
+     }
+ }
+
+ /* Chevron Accordion Animation */
+ .accordion-chevron {
+     transition: transform 0.3s ease;
+     color: #94a3b8;
+ }
+
+ .roadmap-card.active-roadmap .accordion-chevron {
+     transform: rotate(180deg);
+     color: #2196F3;
+     /* Highlights blue when open */
+ }
+
+ /* --- Mobile Fix for Roadmap Header --- */
+ @media (max-width: 768px) {
+     .roadmap-detail-header {
+         flex-direction: column;
+         align-items: flex-start !important;
+         gap: 15px;
+     }
+
+     .roadmap-detail-header>div:last-child {
+         width: 100%;
+         display: flex;
+         justify-content: space-between;
+         /* Spaces out the Download button and the X */
+         align-items: center;
+     }
+ }
+
+ /* --- Fix Roadmap Icon Contrast --- */
+ .rn-skill-box i.fa-external-link-alt {
+     color: inherit !important;
+     /* Forces the icon to perfectly match the black or white text next to it */
+     opacity: 0.85 !important;
+     /* Bumps up the opacity slightly so it doesn't look washed out */
+ }
+
+ /* --- Roadmap Difficulty Tags --- */
+ .roadmap-card-tag {
+     padding: 4px 12px;
+     border-radius: 50px;
+     font-size: 0.85rem;
+     font-weight: 600;
+     display: inline-block;
+ }
+
+ /* Light Mode Colors */
+ .level-beginner {
+     background-color: #dcfce7;
+     color: #166534;
+ }
+
+ /* Green */
+ .level-intermediate {
+     background-color: #dbeafe;
+     color: #1e40af;
+ }
+
+ /* Blue */
+ .level-advanced {
+     background-color: #ffedd5;
+     color: #9a3412;
+ }
+
+ /* Orange */
+
+ /* Dark Mode Colors (Sleek, transparent styling) */
+ .dark-mode .level-beginner {
+     background-color: rgba(22, 101, 52, 0.3);
+     color: #4ade80;
+ }
+
+ .dark-mode .level-intermediate {
+     background-color: rgba(30, 64, 175, 0.3);
+     color: #60a5fa;
+ }
+
+ .dark-mode .level-advanced {
+     background-color: rgba(154, 52, 18, 0.3);
+     color: #fb923c;
  }
