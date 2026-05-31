@@ -15,7 +15,7 @@
     <script src="constants.js"></script>
     <script src="js/pdf.min.js"></script>
     <script src="js/mermaid.min.js"></script>
-    <script src="https://unpkg.com/panzoom@9.4.3/dist/panzoom.min.js"></script>
+    <script src="js/panzoom.min.js"></script>
 
     <script>
         // Initialize Mermaid globally
@@ -93,7 +93,8 @@
             <div class="category-filters" id="category-filters">
                 <button class="filter-btn active" data-category="all" onclick="setCategory('all')">All</button>
                 <button class="filter-btn" data-category="software" onclick="setCategory('software')">Software</button>
-                <button class="filter-btn" data-category="devops" onclick="setCategory('devops')">DevOps</button>
+                <button class="filter-btn" data-category="ai" onclick="setCategory('ai')">Artificial
+                    Intelligence</button>
                 <button class="filter-btn" data-category="security" onclick="setCategory('security')">Security</button>
             </div>
         </div>
@@ -115,57 +116,95 @@
     </div>
 
     <script>
+        function downloadDiagram(roadmapId) {
+            const svg = document.querySelector('#mermaid-container svg');
 
-        function generateMermaidSyntax(roadmap, isArabic) {
+            if (!svg) {
+                console.error("Diagram not found.");
+                return;
+            }
 
-            let graph = 'graph TD\n';
+            // Clone the SVG element so we don't accidentally mess up the live web view
+            const clonedSvg = svg.cloneNode(true);
 
-            // --- Custom Aesthetics ---
-            graph += `classDef root fill:#1e293b,stroke:#fff,stroke-width:3px,color:#fff,font-size:20px,font-weight:bold,padding:20px;\n`;
-            graph += `classDef phase fill:#ffffff,stroke:#1e293b,stroke-width:2px,color:#1e293b,font-size:16px,font-weight:bold;\n`;
-            graph += `classDef required fill:#ffe500,stroke:#cca300,stroke-width:2px,color:#000,font-size:15px,font-weight:bold;\n`;
-            graph += `classDef optional fill:#f1f5f9,stroke:#cbd5e1,stroke-width:2px,color:#475569,font-size:14px;\n\n`;
+            // Create a <style> block containing our nuke command
+            const styleElement = document.createElementNS("http://www.w3.org/2000/svg", "style");
+            styleElement.textContent = `
+                .edgeLabel, .edgeLabel rect {
+                    background-color: transparent !important;
+                    fill: transparent !important;
+                    opacity: 0 !important;
+                }
+            `;
+
+            // Inject the style rules straight into the cloned SVG structure
+            clonedSvg.insertBefore(styleElement, clonedSvg.firstChild);
+
+            // Grab the raw SVG code from our modified clone
+            const serializer = new XMLSerializer();
+            let source = serializer.serializeToString(clonedSvg);
+
+            // Add standard XML namespaces so the file opens correctly anywhere
+            if (!source.includes('xmlns="http://www.w3.org/2000/svg"')) {
+                source = source.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+            }
+
+            // Encode the string safely (protects Arabic characters)
+            const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+
+            // Create a temporary hidden link, click it, and destroy it
+            const link = document.createElement("a");
+            link.href = url;
+
+            const fileName = roadmapId ? roadmapId : "roadmap";
+            link.download = `${fileName}.svg`;
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function generateNativeRoadmap(roadmap, isArabic) {
+            let html = `<div class="rn-container">
+                            <div class="rn-spine"></div>`;
 
             const rootTitle = isArabic ? roadmap.title_ar : roadmap.title_en;
-            graph += `    Root(["${sanitizeHTML(rootTitle)}"]):::root\n\n`;
+            html += `<div class="rn-root">${sanitizeHTML(rootTitle)}</div>`;
 
             if (roadmap.steps && Array.isArray(roadmap.steps)) {
                 roadmap.steps.forEach((step, stepIndex) => {
-                    const stepId = `Step${stepIndex}`;
                     const stepTitle = isArabic ? `مرحلة ${step.phase}: ${step.title_ar}` : `Phase ${step.phase}: ${step.title_en}`;
 
-                    graph += `    Root --> ${stepId}["${sanitizeHTML(stepTitle)}"]:::phase\n`;
+                    html += `<div class="rn-phase-container">
+                                <div class="rn-phase">${sanitizeHTML(stepTitle)}</div>
+                                <div class="rn-skills-wrapper">`;
 
                     if (step.skills && Array.isArray(step.skills)) {
                         step.skills.forEach((skill, skillIndex) => {
-                            const skillId = `Skill_${stepIndex}_${skillIndex}`;
+                            // Automatically alternate left and right sides
+                            const sideClass = stepIndex % 2 === 0 ? 'rn-right' : 'rn-left';
+
                             const skillName = isArabic ? skill.name_ar : skill.name_en;
+                            const reqClass = skill.required ? 'rn-req' : 'rn-opt';
+                            const clickableClass = skill.link ? 'rn-clickable' : '';
+                            const linkAttr = skill.link ? `onclick="window.open('${skill.link}', '_blank')"` : '';
+                            const linkIcon = skill.link ? `<i class="fas fa-external-link-alt" style="margin-inline-start: 4px; opacity: 0.7; font-size: 0.8em;"></i>` : '';
+                            const optText = !skill.required ? `<br><small style="opacity: 0.8; font-weight: normal;">${isArabic ? '(اختياري)' : '(Optional)'}</small>` : '';
 
-                            // --- NEW VISUAL INDICATOR LOGIC ---
-                            // If a link exists, append a small FontAwesome icon to the label
-                            let finalLabel = sanitizeHTML(skillName);
-                            if (skill.link) {
-                                finalLabel += ` <i class='fas fa-external-link-alt' style='color: inherit; font-size:0.85em; opacity:0.8; margin-inline-start:4px;'></i>`;
-                            }
-
-                            // Draw the node using the new finalLabel
-                            if (skill.required) {
-                                graph += `    ${stepId} --> ${skillId}["${finalLabel}"]:::required\n`;
-                            } else {
-                                const optionalLabel = isArabic ? '(اختياري)' : '(Optional)';
-                                graph += `    ${stepId} -.-> ${skillId}["${finalLabel}<br/><small style='font-weight:normal;'>${optionalLabel}</small>"]:::optional\n`;
-                            }
-
-                            // Make the node clickable
-                            if (skill.link) {
-                                graph += `    click ${skillId} "${skill.link}" "Learn more" _blank\n`;
-                            }
+                            html += `
+                                <div class="rn-skill-row ${sideClass}">
+                                    <div class="rn-branch"></div>
+                                    <div class="rn-skill-box ${reqClass} ${clickableClass}" ${linkAttr}>
+                                        ${sanitizeHTML(skillName)}${linkIcon}${optText}
+                                    </div>
+                                </div>`;
                         });
                     }
-                    graph += '\n';
+                    html += `</div></div>`;
                 });
             }
-            return graph;
+            html += `</div>`;
+            return html;
         }
 
         async function renderRoadmapDetail(roadmap) {
@@ -176,32 +215,30 @@
             const desc = isArabic ? roadmap.description_ar : roadmap.description_en;
 
             let html = `
-    <div class="roadmap-detail-header">
-        <div>
-            <div class="roadmap-detail-title">
-                <i class="fas ${roadmap.icon || 'fa-route'}" style="color:${roadmap.color || '#2196F3'}; margin-inline-end:.4rem;"></i>
-                ${sanitizeHTML(title)}
+            <div class="roadmap-detail-header">
+                <div>
+                    <div class="roadmap-detail-title">
+                        <i class="fas ${roadmap.icon || 'fa-route'}" style="color:${roadmap.color || '#2196F3'}; margin-inline-end:.4rem;"></i>
+                        ${sanitizeHTML(title)}
+                    </div>
+                    <div class="roadmap-detail-sub">${sanitizeHTML(desc)}</div>
+                </div>
+                <div>
+                    ${roadmap.pdf ? `
+                        <a href="${sanitizeHTML(roadmap.pdf)}" target="_blank" class="btn btn-sm btn-outline-primary" style="margin-inline-end:.5rem;">
+                            <i class="fas fa-file-pdf"></i> ${isArabic ? 'تحميل كـ PDF' : 'Download PDF'}
+                        </a>
+                    ` : ''}
+                    <button class="roadmap-detail-close" onclick="document.getElementById('roadmap-detail').classList.add('d-none')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </div>
-            <div class="roadmap-detail-sub">${sanitizeHTML(desc)}</div>
-        </div>
-        <div>
-            ${roadmap.pdf ? `
-                <a href="${sanitizeHTML(roadmap.pdf)}" target="_blank" class="btn btn-sm btn-outline-primary" style="margin-inline-end:.5rem;">
-                    ${isArabic ? 'تحميل الخريطة PDF' : 'Download PDF'}
-                </a>
-            ` : ''}
-            <button class="roadmap-detail-close" onclick="document.getElementById('roadmap-detail').classList.add('d-none')">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    </div>
-    
-    <div class="roadmap-diagram-wrapper" style="overflow-x: auto; background: #ffffff; padding: 2rem; border-radius: 8px; margin-top: 1rem; border: 1px solid #e0e0e0; min-height: 400px; display: flex; justify-content: center;">
-        <div class="mermaid" id="mermaid-container">
-            ${generateMermaidSyntax(roadmap, isArabic)}
-        </div>
-    </div>
-    `;
+
+            <div class="roadmap-diagram-wrapper" style="overflow-x: hidden; padding: 1rem 0; width: 100%;">
+                ${generateNativeRoadmap(roadmap, isArabic)}
+            </div>
+            `;
 
             detail.innerHTML = html;
             detail.classList.remove('d-none');
@@ -224,11 +261,14 @@
                             svgElement.style.overflow = 'visible';
 
                             // Initialize Panzoom with looser restrictions
+                            // Initialize Panzoom with strict boundaries
+                            // Initialize Panzoom with strict, rigid behavior
                             panzoom(svgElement, {
                                 maxZoom: 5,
-                                minZoom: 0.1,  // Allow zooming out much further
-                                bounds: false, // Turn off bounds temporarily so it can move freely
-                                smoothScroll: false // Helps prevent trackpad stuttering
+                                minZoom: 1,          // Prevents the map from shrinking smaller than the screen
+                                bounds: true,        // Locks the map inside strict walls
+                                boundsPadding: 0,    // Kills the bouncy, "rubber-band" feeling
+                                smoothScroll: false  // Removes the slippery sliding momentum
                             });
 
                             console.log("Panzoom successfully attached!");
@@ -547,9 +587,8 @@
             if (filterButtons.length >= 4) {
                 filterButtons[0].textContent = isArabic ? 'كل المسارات' : 'All';
                 filterButtons[1].textContent = isArabic ? 'تطوير برمجيات' : 'Software';
-                filterButtons[2].textContent = isArabic ? 'أمن سيبراني' : 'Security';
-                // Added a fallback for the text based on your previous config
-                filterButtons[3].textContent = isArabic ? 'DevOps وبنية تحتية' : 'DevOps & Infra';
+                filterButtons[2].textContent = isArabic ? 'الذكاء الاصطناعي' : 'Artificial Intelligence';
+                filterButtons[3].textContent = isArabic ? 'الأمن السيبراني' : 'Cybersecurity';
             }
 
             // Search input placeholder
