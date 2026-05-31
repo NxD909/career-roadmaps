@@ -16,6 +16,7 @@
     <script src="js/pdf.min.js"></script>
     <script src="js/mermaid.min.js"></script>
     <script src="js/panzoom.min.js"></script>
+    <script src="js/html2canvas.min.js"></script>
 
     <script>
         // Initialize Mermaid globally
@@ -116,53 +117,45 @@
     </div>
 
     <script>
-        function downloadDiagram(roadmapId) {
-            const svg = document.querySelector('#mermaid-container svg');
+        async function downloadDiagram(roadmapId) {
+            const targetElement = document.querySelector('.roadmap-diagram-wrapper');
 
-            if (!svg) {
+            if (!targetElement) {
                 console.error("Diagram not found.");
                 return;
             }
 
-            // Clone the SVG element so we don't accidentally mess up the live web view
-            const clonedSvg = svg.cloneNode(true);
+            // Show a temporary loading state on the button
+            const btn = document.getElementById('dl-btn-icon');
+            if (btn) btn.className = 'fas fa-spinner fa-spin';
 
-            // Create a <style> block containing our nuke command
-            const styleElement = document.createElementNS("http://www.w3.org/2000/svg", "style");
-            styleElement.textContent = `
-                .edgeLabel, .edgeLabel rect {
-                    background-color: transparent !important;
-                    fill: transparent !important;
-                    opacity: 0 !important;
-                }
-            `;
+            try {
+                // Take a high-res screenshot of the HTML structure
+                const canvas = await html2canvas(targetElement, {
+                    scale: 2, // 2x resolution for crisp text
+                    backgroundColor: document.body.classList.contains('dark-mode') ? '#1e293b' : '#ffffff',
+                    useCORS: true // Ensures icons load correctly in the image
+                });
 
-            // Inject the style rules straight into the cloned SVG structure
-            clonedSvg.insertBefore(styleElement, clonedSvg.firstChild);
+                // Convert to a downloadable PNG file
+                const link = document.createElement("a");
+                const fileName = roadmapId ? roadmapId : "roadmap";
+                link.download = `${fileName}.png`;
+                link.href = canvas.toDataURL("image/png");
 
-            // Grab the raw SVG code from our modified clone
-            const serializer = new XMLSerializer();
-            let source = serializer.serializeToString(clonedSvg);
-
-            // Add standard XML namespaces so the file opens correctly anywhere
-            if (!source.includes('xmlns="http://www.w3.org/2000/svg"')) {
-                source = source.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (error) {
+                console.error("Failed to download image:", error);
+                alert(isArabic ? 'فشل تحميل الصورة' : 'Failed to download image');
+            } finally {
+                // Restore button icon
+                if (btn) btn.className = 'fas fa-image';
             }
-
-            // Encode the string safely (protects Arabic characters)
-            const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
-
-            // Create a temporary hidden link, click it, and destroy it
-            const link = document.createElement("a");
-            link.href = url;
-
-            const fileName = roadmapId ? roadmapId : "roadmap";
-            link.download = `${fileName}.svg`;
-
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
         }
+
+
 
         function generateNativeRoadmap(roadmap, isArabic) {
             let html = `<div class="rn-container">
@@ -208,11 +201,17 @@
         }
 
         async function renderRoadmapDetail(roadmap) {
+            currentActiveRoadmap = roadmap; // <-- Memorize the open roadmap
+
             const detail = document.getElementById('roadmap-detail');
             if (!detail) return;
 
             const title = isArabic ? roadmap.title_ar : roadmap.title_en;
-            const desc = isArabic ? roadmap.description_ar : roadmap.description_en;
+
+            // Look for a detailed description first. If it's missing, use the short one.
+            const shortDesc = isArabic ? roadmap.description_ar : roadmap.description_en;
+            const longDesc = isArabic ? roadmap.detailed_desc_ar : roadmap.detailed_desc_en;
+            const desc = longDesc ? longDesc : shortDesc;
 
             let html = `
             <div class="roadmap-detail-header">
@@ -224,12 +223,17 @@
                     <div class="roadmap-detail-sub">${sanitizeHTML(desc)}</div>
                 </div>
                 <div>
+                    <button class="btn btn-sm btn-outline-success" onclick="downloadDiagram('${roadmap.id}')" style="margin-inline-end:.5rem;">
+                        <i id="dl-btn-icon" class="fas fa-image"></i> ${isArabic ? 'تحميل كصورة' : 'Save as Image'}
+                    </button>
+                    
                     ${roadmap.pdf ? `
                         <a href="${sanitizeHTML(roadmap.pdf)}" target="_blank" class="btn btn-sm btn-outline-primary" style="margin-inline-end:.5rem;">
                             <i class="fas fa-file-pdf"></i> ${isArabic ? 'تحميل كـ PDF' : 'Download PDF'}
                         </a>
                     ` : ''}
-                    <button class="roadmap-detail-close" onclick="document.getElementById('roadmap-detail').classList.add('d-none')">
+                    
+                    <button class="roadmap-detail-close" onclick="document.getElementById('roadmap-detail').classList.add('d-none'); currentActiveRoadmap = null;">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -242,6 +246,7 @@
 
             detail.innerHTML = html;
             detail.classList.remove('d-none');
+
 
             try {
                 if (window.mermaid) {
@@ -288,7 +293,7 @@
         // Global State Variables
         let allRoadmaps = [];
         let currentCategory = 'all';
-
+        let currentActiveRoadmap = null;
         async function loadRoadmaps() {
             const container = document.getElementById('roadmaps-container');
             const detail = document.getElementById('roadmap-detail');
@@ -332,7 +337,12 @@
 
         function filterRoadmaps() {
             const container = document.getElementById('roadmaps-container');
+            const detailPanel = document.getElementById('roadmap-detail');
             const searchTerm = document.getElementById('search-input').value.toLowerCase();
+
+            // Rescue the detail panel by moving it back to the main container before wiping the grid
+            document.querySelector('main.container').appendChild(detailPanel);
+
             container.innerHTML = '';
 
             // Hide details panel when searching/filtering
@@ -364,22 +374,71 @@
                 const title = isArabic ? rm.title_ar : rm.title_en;
                 const desc = isArabic ? rm.description_ar : rm.description_en;
 
+                // Determine the difficulty level and colors
+                const level = rm.level || 'beginner'; // Default fallback
+                let levelTextEn, levelTextAr, levelClass;
+
+                if (level === 'intermediate') {
+                    levelTextEn = 'Intermediate'; levelTextAr = 'متوسط'; levelClass = 'level-intermediate';
+                } else if (level === 'advanced') {
+                    levelTextEn = 'Advanced'; levelTextAr = 'متقدم'; levelClass = 'level-advanced';
+                } else {
+                    levelTextEn = 'Beginner'; levelTextAr = 'مبتدئ'; levelClass = 'level-beginner';
+                }
+
+                const displayLevel = isArabic ? levelTextAr : levelTextEn;
+
+                // Build the card HTML
                 card.innerHTML = `
                     <div class="roadmap-card-title">
                         <i class="fas ${rm.icon || 'fa-route'} roadmap-card-icon" style="color:${rm.color || '#2196F3'}"></i>
                         <span>${sanitizeHTML(title)}</span>
                     </div>
                     <div class="roadmap-card-desc">${sanitizeHTML(desc)}</div>
-                    <span class="roadmap-card-tag">
-                        ${isArabic ? 'مسار مهني' : 'Career Path'}
-                    </span>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+                        <span class="roadmap-card-tag ${levelClass}">
+                            ${displayLevel}
+                        </span>
+                        <i class="fas fa-chevron-down accordion-chevron"></i>
+                    </div>
                 `;
 
-                card.onclick = () => renderRoadmapDetail(rm);
+                // Accordion Click Interaction
+                card.onclick = () => {
+                    const detailPanel = document.getElementById('roadmap-detail');
+
+                    // 1. TOGGLE OFF: If they click the card that is already open, close it.
+                    if (card.classList.contains('active-roadmap')) {
+                        card.classList.remove('active-roadmap');
+                        detailPanel.classList.add('d-none');
+                        currentActiveRoadmap = null;
+                        return; // Stop the code here
+                    }
+
+                    // 2. RESET: Remove the highlight from all other cards
+                    document.querySelectorAll('.roadmap-card').forEach(c => c.classList.remove('active-roadmap'));
+
+                    // 3. HIGHLIGHT: Light up the new card
+                    card.classList.add('active-roadmap');
+
+                    // 4. INJECT: Physically move the detail panel to sit immediately after this card in the HTML
+                    card.insertAdjacentElement('afterend', detailPanel);
+
+                    // 5. RENDER: Draw the roadmap
+                    renderRoadmapDetail(rm);
+
+                    // 6. SCROLL: Automatically scroll the screen down slightly so the diagram is perfectly in view
+                    setTimeout(() => {
+                        detailPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 50);
+                };
+
+                // Accordion Keyboard Accessibility
                 card.onkeydown = (e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        renderRoadmapDetail(rm);
+                        card.click(); // Reuse the click logic above to keep code clean
                     }
                 };
                 card.tabIndex = 0;
@@ -554,18 +613,29 @@
         }
 
         function toggleLanguage() {
+            // 1. Check if it is open BEFORE doing anything else
+            const detailPanel = document.getElementById('roadmap-detail');
+            const isDetailOpen = detailPanel && !detailPanel.classList.contains('d-none');
+            const savedRoadmap = currentActiveRoadmap; // Lock it into memory
+
+            // 2. Switch the language variables
             lang = isArabic ? 'en' : 'ar';
             isArabic = !isArabic;
             localStorage.setItem('language', lang);
             document.documentElement.lang = lang;
             document.documentElement.dir = isArabic ? 'rtl' : 'ltr';
+
+            // 3. Update the UI
             document.querySelectorAll('.sidebar ul li').forEach(item => item.classList.remove('active'));
             document.getElementById('language-switcher').classList.add('active');
+
+            // This updates text and calls filterRoadmaps() (which hides the panel)
             updateLanguage();
-            // Changed from loadRoadmaps() to filterRoadmaps() since data is already in memory
-            if (allRoadmaps.length > 0) {
-                filterRoadmaps();
-            } else {
+
+            // 4. Instantly pop the panel back open in the new language if it was open
+            if (isDetailOpen && savedRoadmap) {
+                renderRoadmapDetail(savedRoadmap);
+            } else if (allRoadmaps.length === 0) {
                 loadRoadmaps();
             }
         }
