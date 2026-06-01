@@ -16,7 +16,8 @@
     <script src="js/pdf.min.js"></script>
     <script src="js/mermaid.min.js"></script>
     <script src="js/panzoom.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+    <script src="js/html-to-image.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
 
     <script>
         // Initialize Mermaid globally
@@ -96,6 +97,7 @@
             <div class="category-filters" id="category-filters">
                 <button class="filter-btn active" data-category="all" onclick="setCategory('all')">All</button>
                 <button class="filter-btn" data-category="software" onclick="setCategory('software')">Software</button>
+                <button class="filter-btn" data-category="data" onclick="setCategory('data')">Data & Analytics</button>
                 <button class="filter-btn" data-category="ai" onclick="setCategory('ai')">Artificial
                     Intelligence</button>
                 <button class="filter-btn" data-category="security" onclick="setCategory('security')">Security</button>
@@ -117,8 +119,95 @@
     <div id="loader-overlay">
         <div class="spinner"></div>
     </div>
+    <div class="offcanvas offcanvas-end shadow-lg" tabindex="-1" id="skillSidebar" style="width: 400px; border: none;">
+        <div class="offcanvas-header border-bottom py-4">
+            <h5 class="offcanvas-title fw-bold d-flex align-items-center gap-2" id="skillSidebarTitle">
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column gap-4 p-4">
 
+            <div>
+                <h6 id="sidebarDescLabel" class="text-uppercase text-muted fw-bold mb-2"
+                    style="font-size: 0.75rem; letter-spacing: 1px;"></h6>
+                <p id="skillSidebarDesc" style="font-size: 0.95rem; line-height: 1.7; opacity: 0.85; margin: 0;"></p>
+            </div>
+
+            <div>
+                <h6 id="sidebarLinksLabel" class="text-uppercase text-muted fw-bold mb-3"
+                    style="font-size: 0.75rem; letter-spacing: 1px;"></h6>
+                <div id="skillSidebarLinks" class="d-flex flex-column gap-2">
+                </div>
+            </div>
+
+        </div>
+    </div>
     <script>
+        function openSkillSidebar(title, desc, linksDataEncoded) {
+            // 1. Set Title
+            document.getElementById('skillSidebarTitle').innerHTML = `<i class="fas fa-book-open text-primary opacity-75"></i> ${title}`;
+
+            // 2. Set Translated Labels
+            document.getElementById('sidebarDescLabel').textContent = isArabic ? 'التفاصيل' : 'Overview';
+            document.getElementById('sidebarLinksLabel').textContent = isArabic ? 'المصادر التعليمية' : 'Learning Resources';
+
+            // 3. Set Description
+            const descElement = document.getElementById('skillSidebarDesc');
+            if (desc && desc !== 'undefined' && desc !== '') {
+                descElement.innerHTML = desc;
+            } else {
+                descElement.innerHTML = isArabic ? '<span class="text-muted">لا يوجد وصف تفصيلي لهذه المهارة حالياً.</span>' : '<span class="text-muted">No detailed description available for this skill yet.</span>';
+            }
+
+            // 4. Handle Links
+            const linksContainer = document.getElementById('skillSidebarLinks');
+            linksContainer.innerHTML = ''; // Clear old links out
+
+            let linksArray = [];
+            if (linksDataEncoded && linksDataEncoded !== 'undefined') {
+                try {
+                    linksArray = JSON.parse(decodeURIComponent(linksDataEncoded));
+                } catch (e) {
+                    console.error("Failed to parse links", e);
+                }
+            }
+
+            if (linksArray.length > 0) {
+                // Loop through and generate a beautiful button for every link
+                linksArray.forEach(item => {
+                    const btn = document.createElement('a');
+                    btn.href = item.url;
+                    btn.target = '_blank';
+                    // تم إضافة gap-3 لضمان وجود مسافة أمان دائماً بين النص والأيقونة
+                    btn.className = 'btn btn-light border d-flex justify-content-between align-items-center w-100 p-3 skill-link-btn gap-3';
+                    btn.style.borderRadius = '10px';
+                    btn.style.transition = 'all 0.2s ease';
+
+                    // استخدام حاوية ذكية تمنع التداخل وتجعل النص يلتف بشكل صحيح مهما كان طوله
+                    btn.innerHTML = `
+                        <div class="fw-bold text-start" style="min-width: 0; flex-grow: 1; white-space: normal; word-break: break-word;">${item.title}</div>
+                        <i class="fas fa-external-link-alt text-primary opacity-75 flex-shrink-0"></i>
+                    `;
+
+                    // Add a nice hover effect
+                    btn.onmouseenter = () => btn.style.transform = 'translateY(-2px)';
+                    btn.onmouseleave = () => btn.style.transform = 'translateY(0)';
+
+                    linksContainer.appendChild(btn);
+                });
+            } else {
+                linksContainer.innerHTML = `<div class="p-3 bg-light rounded text-center text-muted small">${isArabic ? 'لا توجد مصادر مضافة بعد.' : 'No resources added yet.'}</div>`;
+            }
+
+            // 5. Open the Bootstrap Offcanvas
+            const sidebarElement = document.getElementById('skillSidebar');
+            if (window.bootstrap) {
+                const offcanvasInstance = bootstrap.Offcanvas.getOrCreateInstance(sidebarElement);
+                offcanvasInstance.show();
+            } else {
+                console.error("Bootstrap JS is not loaded!");
+            }
+        }
+
         async function downloadDiagram(roadmapId) {
             const targetElement = document.querySelector('.roadmap-diagram-wrapper');
 
@@ -179,21 +268,50 @@
 
                     if (step.skills && Array.isArray(step.skills)) {
                         step.skills.forEach((skill, skillIndex) => {
-                            // Automatically alternate left and right sides
                             const sideClass = stepIndex % 2 === 0 ? 'rn-right' : 'rn-left';
 
                             const skillName = isArabic ? skill.name_ar : skill.name_en;
+                            const skillDesc = isArabic ? (skill.desc_ar || '') : (skill.desc_en || '');
                             const reqClass = skill.required ? 'rn-req' : 'rn-opt';
-                            const clickableClass = skill.link ? 'rn-clickable' : '';
-                            const linkAttr = skill.link ? `onclick="window.open('${skill.link}', '_blank')"` : '';
-                            const linkIcon = skill.link ? `<i class="fas fa-external-link-alt" style="margin-inline-start: 4px; opacity: 0.7; font-size: 0.8em;"></i>` : '';
+
+                            // 1. Pack the links safely
+                            let linksToPass = [];
+
+                            // If you upgrade your JSON to use an array of multiple "links":
+                            if (skill.links && Array.isArray(skill.links)) {
+                                linksToPass = skill.links;
+                            }
+                            // Fallback to your current JSON structure (single "link" string):
+                            else if (skill.link) {
+                                linksToPass = [{
+                                    title: isArabic ? 'المصدر الأساسي' : 'Primary Resource',
+                                    url: skill.link
+                                }];
+                            }
+
+                            const isClickable = (linksToPass.length > 0 || skillDesc) ? true : false;
+                            const clickableClass = isClickable ? 'rn-clickable' : '';
+
+                            // Escape text perfectly so JS doesn't crash on apostrophes
+                            const safeName = sanitizeHTML(skillName).replace(/'/g, "\\'");
+                            const safeDesc = sanitizeHTML(skillDesc).replace(/'/g, "\\'");
+                            const safeLinksEncoded = linksToPass.length > 0 ? encodeURIComponent(JSON.stringify(linksToPass)) : '';
+
+                            // Call the new Sidebar function
+                            const clickAction = isClickable ? `onclick="openSkillSidebar('${safeName}', '${safeDesc}', '${safeLinksEncoded}')"` : '';
+
+                            let iconHTML = '';
+                            if (skillDesc || linksToPass.length > 0) {
+                                iconHTML = `<i class="fas fa-arrow-circle-right" style="margin-inline-start: 6px; opacity: 0.6; font-size: 0.85em;"></i>`;
+                            }
+
                             const optText = !skill.required ? `<br><small style="opacity: 0.8; font-weight: normal;">${isArabic ? '(اختياري)' : '(Optional)'}</small>` : '';
 
                             html += `
                                 <div class="rn-skill-row ${sideClass}">
                                     <div class="rn-branch"></div>
-                                    <div class="rn-skill-box ${reqClass} ${clickableClass}" ${linkAttr}>
-                                        ${sanitizeHTML(skillName)}${linkIcon}${optText}
+                                    <div class="rn-skill-box ${reqClass} ${clickableClass}" ${clickAction}>
+                                        ${sanitizeHTML(skillName)}${iconHTML}${optText}
                                     </div>
                                 </div>`;
                         });
@@ -684,11 +802,12 @@
 
             // Filter button texts
             const filterButtons = document.querySelectorAll('.filter-btn');
-            if (filterButtons.length >= 4) {
+            if (filterButtons.length >= 5) {
                 filterButtons[0].textContent = isArabic ? 'كل المسارات' : 'All';
                 filterButtons[1].textContent = isArabic ? 'تطوير برمجيات' : 'Software';
-                filterButtons[2].textContent = isArabic ? 'الذكاء الاصطناعي' : 'Artificial Intelligence';
-                filterButtons[3].textContent = isArabic ? 'الأمن السيبراني' : 'Cybersecurity';
+                filterButtons[2].textContent = isArabic ? 'البيانات والتحليلات' : 'Data & Analytics';
+                filterButtons[3].textContent = isArabic ? 'الذكاء الاصطناعي' : 'Artificial Intelligence';
+                filterButtons[4].textContent = isArabic ? 'الأمن السيبراني' : 'Cybersecurity';
             }
 
             // Search input placeholder
