@@ -1,255 +1,491 @@
 [
   {
-    "id": "software-engineer",
-    "category": "software",
+    "id": "frontend_dev",
     "level": "beginner",
-    "title_ar": "مهندس برمجيات",
-    "title_en": "Software Engineer",
-    "icon": "fa-code",
-    "color": "#4CAF50",
-    "description_ar": "مسار لتعلم تطوير التطبيقات والأنظمة البرمجية.",
-    "description_en": "Path to learn building applications and software systems.",
     "display_order": 1,
-    "steps": [
-      {
-        "phase": 1,
-        "title_ar": "الأساسيات",
-        "title_en": "Fundamentals",
-        "skills": [
-          { "name_ar": "منطق البرمجة", "name_en": "Programming logic", "required": true ,"link": "https://www.coursera.org/learn/computer-networking" },
-          { "name_ar": "لغة برمجة (Python/JS)", "name_en": "Programming language (Python/JS)", "required": true }
-        ]
-      },
-      {
-        "phase": 2,
-        "title_ar": "هياكل البيانات والخوارزميات",
-        "title_en": "Data Structures & Algorithms",
-        "skills": [
-          { "name_ar": "هياكل البيانات", "name_en": "Data Structures", "required": true ,"link": "https://www.coursera.org/learn/computer-networking" },
-          { "name_ar": "الخوارزميات الأساسية", "name_en": "Basic Algorithms", "required": true }
-        ]
-      },
-      {
-        "phase": 3,
-        "title_ar": "تطوير الويب",
-        "title_en": "Web Development",
-        "skills": [
-          { "name_ar": "HTML/CSS/JS", "name_en": "HTML/CSS/JS", "required": true },
-          { "name_ar": "إطار عمل (React/Vue)", "name_en": "Framework (React/Vue)", "required": false }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "devops",
-    "category": "devops",
-    "level": "intermediate",
-    "title_ar": "مهندس DevOps",
-    "title_en": "DevOps Engineer",
-    "icon": "fa-server",
-    "color": "#2196F3",
-    "description_ar": "مسار لربط التطوير بالتشغيل والأتمتة.",
-    "description_en": "Path to connect development with operations & automation.",
-    "display_order": 2,
-    "steps": [
-      {
-        "phase": 1,
-        "title_ar": "أساسيات النظام",
-        "title_en": "System Basics",
-        "skills": [
-          { "name_ar": "Linux أساسيات", "name_en": "Linux basics", "required": true },
-          { "name_ar": "Networking أساسيات", "name_en": "Networking basics", "required": true }
-        ]
-      },
-      {
-        "phase": 2,
-        "title_ar": "الحاويات",
-        "title_en": "Containers",
-        "skills": [
-          { "name_ar": "Docker", "name_en": "Docker", "required": true },
-          { "name_ar": "Docker Compose", "name_en": "Docker Compose", "required": false }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "cybersecurity",
-    "category": "security",
-    "level": "beginner",
-    "title_ar": "مختص أمن سيبراني",
-    "title_en": "Cybersecurity Specialist",
-    "icon": "fa-shield-alt",
-    "color": "#E53935",
-    "description_ar": "مسار لحماية الأنظمة والشبكات من الهجمات.",
-    "description_en": "Path to protect systems and networks from attacks.",
-    "display_order": 3,
-    "steps": [
-      {
-        "phase": 1,
-        "title_ar": "الأساسيات",
-        "title_en": "Fundamentals",
-        "skills": [
-          { "name_ar": "أساسيات الشبكات", "name_en": "Networking basics", "required": true },
-          { "name_ar": "نظام Linux", "name_en": "Linux", "required": true }
-        ]
-      },
-      {
-        "phase": 2,
-        "title_ar": "مفاهيم الأمن",
-        "title_en": "Security Concepts",
-        "skills": [
-          { "name_ar": "مفاهيم التشفير", "name_en": "Cryptography basics", "required": false },
-          { "name_ar": "تهديدات شائعة", "name_en": "Common threats", "required": true }
-        ]
-        
-      }
-    ]
-  },
-  {
-    "id": "fullstack_web_dev",
-    "display_order": 2,
     "category": "software",
-    "icon": "fa-layer-group",
-    "color": "#8B5CF6",
-    "title_ar": "مطور ويب شامل",
-    "title_en": "Full-Stack Web Developer",
-    "description_ar": "مسار احترافي لبناء تطبيقات الويب من الصفر، يشمل تصميم الواجهات وبرمجة الخوادم وقواعد البيانات.",
-    "description_en": "A professional path to building web applications from scratch, covering frontend design, backend servers, and databases.",
+    "icon": "fa-laptop-code",
+    "color": "#0ea5e9",
+    "title_ar": "مطور واجهات أمامية",
+    "title_en": "Frontend Developer",
+    "description_ar": "مسار شامل لتعلم بناء واجهات مستخدم تفاعلية وجذابة للمواقع الإلكترونية.",
+    "description_en": "A comprehensive path to building interactive and aesthetic user interfaces for the web.",
+    "detailed_desc_ar": "في هذا المسار، ستتعلم كيفية تحويل التصميمات إلى مواقع حية وتفاعلية. سنبدأ بالأساسيات لبناء هيكل الصفحة، ثم ننتقل إلى تنسيق الألوان والتصميم الجمالي، وصولاً إلى برمجة التفاعلات باستخدام جافا سكريبت وإطارات العمل الحديثة مثل React.",
+    "detailed_desc_en": "In this path, you will learn how to turn designs into live, interactive websites. We will start with the basics of page structure, move into styling and aesthetic design, and finally program interactions using JavaScript and modern frameworks like React.",
     "steps": [
       {
         "phase": 1,
-        "title_ar": "أساسيات الواجهات الأمامية",
-        "title_en": "Frontend Basics",
+        "title_ar": "أساسيات الويب والهيكلة",
+        "title_en": "Web Basics & Structure",
         "skills": [
           {
-            "name_ar": "HTML & CSS",
-            "name_en": "HTML & CSS",
-            "required": true
+            "name_ar": "كيف يعمل الإنترنت",
+            "name_en": "How the Internet Works",
+            "required": true,
+            "desc_ar": "فهم المبادئ الأساسية لكيفية انتقال البيانات بين المتصفح والخادم عبر الشبكة.",
+            "desc_en": "Understand the core concepts of clients, servers, and HTTP requests.",
+            "links": [
+              { "title": "MDN Web Docs: How the Internet Works", "url": "https://developer.mozilla.org/en-US/docs/Learn/Common_questions/Web_mechanics/How_does_the_Internet_work" },
+              { "title": "Aaron Jack (YouTube)", "url": "https://www.youtube.com/watch?v=e4S8X-u3Skg" }
+            ]
           },
           {
-            "name_ar": "جافاسكربت",
-            "name_en": "JavaScript",
-            "required": true
+            "name_ar": "لغة HTML5",
+            "name_en": "HTML5 Basics",
+            "required": true,
+            "desc_ar": "إتقان كتابة العناصر الهيكلية والدلالية لبناء صفحات ويب قياسية.",
+            "desc_en": "Master writing structural and semantic HTML tags.",
+            "links": [
+              { "title": "W3Schools: HTML Tutorial", "url": "https://www.w3schools.com/html/" },
+              { "title": "freeCodeCamp: Responsive Web Design", "url": "https://www.freecodecamp.org/learn/responsive-web-design/" }
+            ]
           }
         ]
       },
       {
         "phase": 2,
-        "title_ar": "أطر عمل الواجهات الأمامية",
-        "title_en": "Frontend Frameworks",
+        "title_ar": "التصميم الجمالي والتنسيق",
+        "title_en": "Aesthetic Design & Styling",
         "skills": [
           {
-            "name_ar": "مكتبة React",
-            "name_en": "React.js",
-            "required": true
+            "name_ar": "أساسيات CSS3",
+            "name_en": "CSS3 Fundamentals",
+            "required": true,
+            "desc_ar": "تعلم كيفية إضافة الألوان، الخطوط، الخلفيات والتحكم في المساحات.",
+            "desc_en": "Learn selectors, cascading properties, custom fonts, and spacing.",
+            "links": [
+              { "title": "W3Schools: CSS Tutorial", "url": "https://www.w3schools.com/css/" },
+              { "title": "Web Dev: Learn CSS", "url": "https://web.dev/learn/css/" }
+            ]
           },
           {
-            "name_ar": "إدارة الحالة (Redux)",
-            "name_en": "State Management (Redux)",
-            "required": false
+            "name_ar": "تخطيط Flexbox & Grid",
+            "name_en": "Flexbox & Grid Layouts",
+            "required": true,
+            "desc_ar": "احتراف تصميم الواجهات المتجاوبة والمحاذاة المتقدمة للعناصر.",
+            "desc_en": "Master modern alignment tools and responsive grids.",
+            "links": [
+              { "title": "CSS-Tricks: Guide to Flexbox", "url": "https://css-tricks.com/snippets/css/a-guide-to-flexbox/" },
+              { "title": "Web Dev Simplified (YouTube)", "url": "https://www.youtube.com/watch?v=hs3piaN4b5I" }
+            ]
+          },
+          {
+            "name_ar": "نظرية الألوان والتصميم",
+            "name_en": "Color Theory & UI",
+            "required": false,
+            "desc_ar": "فهم كيفية اختيار درجات وتناسق الألوان والخطوط.",
+            "desc_en": "Explore choosing complementary color palettes and typography rules.",
+            "links": [
+              { "title": "Interaction Design Foundation", "url": "https://www.interaction-design.org/literature/topics/color-theory" },
+              { "title": "DesignCourse: Color Theory (YouTube)", "url": "https://www.youtube.com/watch?v=fXWvB7vA9hA" }
+            ]
           }
         ]
       },
       {
         "phase": 3,
-        "title_ar": "الخوادم وقواعد البيانات",
-        "title_en": "Backend & Databases",
+        "title_ar": "البرمجة التفاعلية",
+        "title_en": "Interactive Programming",
         "skills": [
           {
-            "name_ar": "لغة PHP وإطار عمل Laravel",
-            "name_en": "PHP & Laravel Framework",
-            "required": true
-          },
-          {
-            "name_ar": "قواعد بيانات MySQL",
-            "name_en": "MySQL Databases",
-            "required": true
-          },
-          {
-            "name_ar": "بنية MVC",
-            "name_en": "MVC Architecture",
-            "required": true
+            "name_ar": "أساسيات JavaScript",
+            "name_en": "JavaScript Basics",
+            "required": true,
+            "desc_ar": "تعلم المتغيرات، الحلقات، المصفوفات، وتعديل عناصر الصفحة بشكل تفاعلي.",
+            "desc_en": "Learn variables, loops, arrays, and basic DOM manipulation.",
+            "links": [
+              { "title": "JavaScript.info: Language Guide", "url": "https://javascript.info/" },
+              { "title": "W3Schools: JS Tutorial", "url": "https://www.w3schools.com/js/" },
+              { "title": "Programming with Mosh (YouTube)", "url": "https://www.youtube.com/watch?v=W6NZfCO5SIk" }
+            ]
           }
         ]
       },
       {
         "phase": 4,
-        "title_ar": "التحكم في الإصدارات",
-        "title_en": "Version Control",
+        "title_ar": "إطارات العمل الحديثة",
+        "title_en": "Modern Frameworks",
         "skills": [
           {
-            "name_ar": "Git & GitHub",
-            "name_en": "Git & GitHub",
-            "required": true
+            "name_ar": "أساسيات React",
+            "name_en": "React Fundamentals",
+            "required": true,
+            "desc_ar": "بناء تطبيقات صفحة واحدة (SPAs) باستخدام مكونات قابلة لإعادة الاستخدام.",
+            "desc_en": "Build Single Page Applications (SPAs) using reusable components.",
+            "links": [
+              { "title": "React Official Docs", "url": "https://react.dev/learn" },
+              { "title": "freeCodeCamp: React Course (YouTube)", "url": "https://www.youtube.com/watch?v=bMknfKXIFA8" }
+            ]
+          },
+          {
+            "name_ar": "أداة Vite",
+            "name_en": "Vite Tooling",
+            "required": false,
+            "desc_ar": "تسريع بيئة التطوير المحلية وإدارة حزم المشاريع الحديثة بكفاءة عالية.",
+            "desc_en": "Optimize your local environment with blazing fast bundling.",
+            "links": [
+              { "title": "Vite Official Guide", "url": "https://vitejs.dev/guide/" },
+              { "title": "Traversy Media: Vite Crash Course (YouTube)", "url": "https://www.youtube.com/watch?v=KCrXgy8qtjM" }
+            ]
           }
         ]
       }
     ]
   },
   {
-    "id": "cybersecurity_specialist",
-    "display_order": 3,
-    "category": "security",
-    "icon": "fa-shield-halved",
-    "color": "#EF4444",
-    "title_ar": "أخصائي أمن سيبراني",
-    "title_en": "Cybersecurity Specialist",
-    "description_ar": "مسار مخصص لحماية الأنظمة والشبكات والبيانات من الهجمات الرقمية واكتشاف الثغرات.",
-    "description_en": "A path dedicated to protecting systems, networks, and data from digital attacks and discovering vulnerabilities.",
+    "id": "backend_developer_php",
+    "level": "intermediate",
+    "display_order": 2,
+    "category": "software",
+    "icon": "fa-server",
+    "color": "#ef4444",
+    "title_ar": "مطور واجهات خلفية (PHP/Laravel)",
+    "title_en": "Backend Developer (PHP/Laravel)",
+    "description_ar": "مسار شامل لتعلم برمجة الخوادم، قواعد البيانات، وهيكلة الأنظمة القوية.",
+    "description_en": "A comprehensive path to learning server-side programming, databases, and robust system architecture.",
+    "detailed_desc_ar": "يغوص هذا المسار في المنطق الأساسي لتطبيقات الويب. ستتعلم كيفية إعداد بيئة التطوير المحلية، وإدارة قواعد البيانات، وبناء أنظمة قوية تعتمد على هيكلية Model-View-Controller (MVC).",
+    "detailed_desc_en": "This path dives into the core logic of web applications. You will learn to set up environments, manage databases, and build robust MVC systems.",
     "steps": [
       {
         "phase": 1,
-        "title_ar": "أساسيات تقنية المعلومات",
-        "title_en": "IT Fundamentals",
+        "title_ar": "بيئة العمل والأساسيات",
+        "title_en": "Environment & Core Basics",
         "skills": [
           {
-            "name_ar": "أساسيات الشبكات",
-            "name_en": "Networking Basics",
-            "required": true
+            "name_ar": "إعداد الخادم المحلي (XAMPP)",
+            "name_en": "Local Server (XAMPP)",
+            "required": true,
+            "desc_ar": "إعداد خادم Apache وقاعدة بيانات MySQL محلياً.",
+            "desc_en": "Set up a local Apache server and MySQL database environment.",
+            "links": [
+              { "title": "Apache Friends", "url": "https://www.apachefriends.org/index.html" },
+              { "title": "XAMPP Setup Guide (YouTube)", "url": "https://www.youtube.com/watch?v=h6h44zNpeLg" }
+            ]
           },
           {
-            "name_ar": "إدارة نظام لينكس",
-            "name_en": "Linux Administration",
-            "required": true
+            "name_ar": "أساسيات لغة PHP",
+            "name_en": "PHP Fundamentals",
+            "required": true,
+            "desc_ar": "تعلم المتغيرات، الدوال، والمصفوفات في إصدارات PHP الحديثة.",
+            "desc_en": "Learn variables, functions, and arrays in modern PHP.",
+            "links": [
+              { "title": "W3Schools: PHP", "url": "https://www.w3schools.com/php/" },
+              { "title": "Laracasts: PHP for Beginners", "url": "https://laracasts.com/series/php-for-beginners-2023-edition" }
+            ]
           }
         ]
       },
       {
         "phase": 2,
-        "title_ar": "مبادئ الأمن السيبراني",
-        "title_en": "Security Principles",
+        "title_ar": "إدارة قواعد البيانات",
+        "title_en": "Database Management",
         "skills": [
           {
-            "name_ar": "التشفير",
-            "name_en": "Cryptography",
-            "required": true
+            "name_ar": "أساسيات MySQL",
+            "name_en": "MySQL Basics",
+            "required": true,
+            "desc_ar": "كتابة استعلامات SQL لإنشاء الجداول واسترجاع المعلومات.",
+            "desc_en": "Write SQL queries to create tables and retrieve data.",
+            "links": [
+              { "title": "MySQL Tutorial", "url": "https://www.mysqltutorial.org/" },
+              { "title": "W3Schools: SQL Guide", "url": "https://www.w3schools.com/sql/" }
+            ]
           },
           {
-            "name_ar": "إدارة المخاطر",
-            "name_en": "Risk Management",
-            "required": true
+            "name_ar": "العلاقات في قواعد البيانات",
+            "name_en": "Database Relations",
+            "required": true,
+            "desc_ar": "فهم العلاقات المتعددة باستخدام المفاتيح الأجنبية.",
+            "desc_en": "Understand database relationships using Foreign Keys.",
+            "links": [
+              { "title": "freeCodeCamp: Database Design", "url": "https://www.freecodecamp.org/news/relational-database-design/" },
+              { "title": "Lucidchart: ER Diagrams Guide", "url": "https://www.lucidchart.com/pages/er-diagrams" }
+            ]
           }
         ]
       },
       {
         "phase": 3,
-        "title_ar": "الأمن الهجومي والدفاعي",
-        "title_en": "Offensive & Defensive Security",
+        "title_ar": "هيكلة الأنظمة المتقدمة",
+        "title_en": "Advanced Architecture",
         "skills": [
           {
-            "name_ar": "اختبار الاختراق",
-            "name_en": "Penetration Testing",
-            "required": true
+            "name_ar": "البرمجة الكائنية (OOP)",
+            "name_en": "Object-Oriented Programming",
+            "required": true,
+            "desc_ar": "هيكلة الكود باستخدام الفئات والكائنات والوراثة.",
+            "desc_en": "Structure code cleanly using Classes, Objects, and Inheritance.",
+            "links": [
+              { "title": "PHP The Right Way: OOP", "url": "https://phptherightway.com/#object_oriented_programming" },
+              { "title": "Dani Krossing: PHP OOP (YouTube)", "url": "https://www.youtube.com/watch?v=Anz0Aa3m4wM" }
+            ]
           },
           {
-            "name_ar": "القرصنة الأخلاقية",
-            "name_en": "Ethical Hacking",
-            "required": true
+            "name_ar": "نمط التصميم MVC",
+            "name_en": "MVC Architecture",
+            "required": true,
+            "desc_ar": "فصل منطق التطبيق إلى نماذج وعروض ومتحكمات.",
+            "desc_en": "Separate logic into Models, Views, and Controllers.",
+            "links": [
+              { "title": "SitePoint: MVC Pattern", "url": "https://www.sitepoint.com/the-mvc-pattern-and-php-1/" },
+              { "title": "Traversy Media: MVC Explained (YouTube)", "url": "https://www.youtube.com/watch?v=pHEMTv8RAy4" }
+            ]
           },
           {
-            "name_ar": "التحليل الجنائي الرقمي",
-            "name_en": "Digital Forensics",
-            "required": false
+            "name_ar": "مدير الحزم Composer",
+            "name_en": "Composer Package Manager",
+            "required": true,
+            "desc_ar": "إدارة مكتبات الطرف الثالث واعتمادات المشروع بكفاءة.",
+            "desc_en": "Manage project dependencies and libraries efficiently.",
+            "links": [
+              { "title": "Composer Official Docs", "url": "https://getcomposer.org/doc/00-intro.md" },
+              { "title": "W3Schools: PHP Composer", "url": "https://www.w3schools.com/php/php_composer.asp" }
+            ]
+          }
+        ]
+      },
+      {
+        "phase": 4,
+        "title_ar": "إطار العمل Laravel",
+        "title_en": "Laravel Framework",
+        "skills": [
+          {
+            "name_ar": "التوجيه والمتحكمات",
+            "name_en": "Routing & Controllers",
+            "required": true,
+            "desc_ar": "إعداد مسارات الويب وربطها بمنطق المتحكمات بسلاسة.",
+            "desc_en": "Set up web routes and connect them to Controllers.",
+            "links": [
+              { "title": "Laravel Docs: Routing", "url": "https://laravel.com/docs/routing" },
+              { "title": "Laravel Docs: Controllers", "url": "https://laravel.com/docs/controllers" }
+            ]
+          },
+          {
+            "name_ar": "التعامل مع البيانات (Eloquent)",
+            "name_en": "Eloquent ORM",
+            "required": true,
+            "desc_ar": "التعامل مع قاعدة البيانات باستخدام تطبيق Active Record القوي.",
+            "desc_en": "Interact with databases using Laravel's robust ORM.",
+            "links": [
+              { "title": "Laravel Docs: Eloquent", "url": "https://laravel.com/docs/eloquent" },
+              { "title": "Coder's Tape (YouTube)", "url": "https://www.youtube.com/watch?v=ImtZ5yENzgE" }
+            ]
+          },
+          {
+            "name_ar": "المصادقة والأمان",
+            "name_en": "Authentication & Security",
+            "required": false,
+            "desc_ar": "تطبيق أنظمة تسجيل الدخول وإعادة تعيين كلمات المرور.",
+            "desc_en": "Implement secure user login and registration.",
+            "links": [
+              { "title": "Laravel Docs: Authentication", "url": "https://laravel.com/docs/authentication" },
+              { "title": "Traversy Media: Laravel Crash Course (YouTube)", "url": "https://www.youtube.com/watch?v=MYyJ4PuL4pY" }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "fullstack_web_dev",
+    "level": "advanced",
+    "display_order": 3,
+    "category": "software",
+    "icon": "fa-layer-group",
+    "color": "#8b5cf6",
+    "title_ar": "مطور ويب شامل",
+    "title_en": "Full-Stack Web Developer",
+    "description_ar": "مسار احترافي متقدم لبناء تطبيقات ويب كاملة ومترابطة من الصفر وحتى النشر.",
+    "description_en": "An advanced professional path to mastering client-side, server-side, and deployment architectures.",
+    "detailed_desc_ar": "هذا المسار مخصص لمن يمتلكون أساسيات البرمجة ويريدون دمج الواجهات الأمامية بالخلفية. ستتعلم بناء واجهات ديناميكية برياكت، وتطوير خوادم آمنة بلارافيل، وربطهما عبر واجهات برمجة التطبيقات (RESTful APIs)، وصولاً إلى حماية التطبيق ونشره على خوادم حقيقية.",
+    "detailed_desc_en": "This path is designed for developers who want to bridge the gap between client and server. You will build dynamic user interfaces with React, develop secure backends with Laravel, connect them seamlessly via RESTful APIs, and finally deploy your application to live servers.",
+    "steps": [
+      {
+        "phase": 1,
+        "title_ar": "أساسيات وتفاعلية الواجهات الأمامية",
+        "title_en": "Frontend Foundations & Interactivity",
+        "skills": [
+          {
+            "name_ar": "هيكلة وتنسيق المواقع (HTML5 & CSS3)",
+            "name_en": "Responsive HTML5 & CSS3",
+            "required": true,
+            "desc_ar": "إتقان هيكلة الصفحات الدلالية وتنسيقها باستخدام التقنيات الحديثة مثل Flexbox و CSS Grid.",
+            "desc_en": "Master semantic HTML page structuring and modern layout styling techniques like Flexbox and CSS Grid.",
+            "links": [
+              { "title": "W3Schools: HTML Tutorial", "url": "https://www.w3schools.com/html/" },
+              { "title": "freeCodeCamp: Responsive Web Design", "url": "https://www.freecodecamp.org/learn/responsive-web-design/" }
+            ]
+          },
+          {
+            "name_ar": "أطر عمل التصميم (Bootstrap/Tailwind)",
+            "name_en": "CSS Frameworks (Bootstrap)",
+            "required": true,
+            "desc_ar": "تسريع تطوير واجهات المستخدم باستخدام فئات الخدمات والمكونات الجاهزة للتجاوب السريع.",
+            "desc_en": "Accelerate your UI development using utility classes and pre-built components.",
+            "links": [
+              { "title": "W3Schools: Bootstrap 5 Tutorial", "url": "https://www.w3schools.com/bootstrap5/" },
+              { "title": "freeCodeCamp: Bootstrap 5 (YouTube)", "url": "https://www.youtube.com/watch?v=-qfEOE4vtxE" }
+            ]
+          },
+          {
+            "name_ar": "برمجة جافاسكربت المتقدمة (ES6+)",
+            "name_en": "Modern JavaScript (ES6+)",
+            "required": true,
+            "desc_ar": "تعلم البرمجة غير المتزامنة، الوعود (Promises)، جلب البيانات، والتعامل مع عناصر DOM.",
+            "desc_en": "Learn asynchronous programming, promises, Fetch API, and DOM manipulation.",
+            "links": [
+              { "title": "W3Schools: JavaScript Tutorial", "url": "https://www.w3schools.com/js/" },
+              { "title": "JavaScript.info: The Modern Language", "url": "https://javascript.info/" }
+            ]
+          }
+        ]
+      },
+      {
+        "phase": 2,
+        "title_ar": "أطر العمل واستهلاك البيانات",
+        "title_en": "Frontend Frameworks & API Consumption",
+        "skills": [
+          {
+            "name_ar": "مكتبة React.js والتفكير المكوناتي",
+            "name_en": "React.js Core Architecture",
+            "required": true,
+            "desc_ar": "فهم تطبيقات الصفحة الواحدة (SPAs)، دورة حياة المكونات، واستخدام الخطّافات (Hooks).",
+            "desc_en": "Understand single-page applications (SPAs), component lifecycles, and hooks.",
+            "links": [
+              { "title": "W3Schools: React Tutorial", "url": "https://www.w3schools.com/react/" },
+              { "title": "React Official Documentation", "url": "https://react.dev/learn" }
+            ]
+          },
+          {
+            "name_ar": "التوجيه في تطبيقات الصفحة الواحدة",
+            "name_en": "SPA Routing (React Router)",
+            "required": true,
+            "desc_ar": "التنقل بين الشاشات والمكونات المختلفة دون إعادة تحميل صفحة المتصفح بشكل كامل.",
+            "desc_en": "Navigate between different views and components without reloading the browser page.",
+            "links": [
+              { "title": "W3Schools: React Router Quickstart", "url": "https://www.w3schools.com/react/react_router.asp" },
+              { "title": "Web Dev Simplified: React Router Guide (YouTube)", "url": "https://www.youtube.com/watch?v=Ul3y1LXxzdU" }
+            ]
+          },
+          {
+            "name_ar": "إدارة الحالة واستهلاك واجهات الـ API",
+            "name_en": "State Management & Data Fetching",
+            "required": true,
+            "desc_ar": "إدارة الحالة الشاملة للتطبيق واستهلاك البيانات من الخوادم عبر واجهات RESTful APIs.",
+            "desc_en": "Manage global state and consume RESTful APIs using Redux Toolkit or async Javascript strategies.",
+            "links": [
+              { "title": "W3Schools: JS Async & Promises", "url": "https://www.w3schools.com/js/js_asynchronous.asp" },
+              { "title": "Redux Toolkit Official Guide", "url": "https://redux-toolkit.js.org/introduction/getting-started" }
+            ]
+          }
+        ]
+      },
+      {
+        "phase": 3,
+        "title_ar": "بناء الخلفية والبيانات المترابطة",
+        "title_en": "Backend Architecture & Relational Data",
+        "skills": [
+          {
+            "name_ar": "لغة PHP ونمط الـ MVC",
+            "name_en": "PHP 8 & MVC Architecture",
+            "required": true,
+            "desc_ar": "التعمق في كيفية معالجة الخوادم للبيانات، البرمجة كائنية التوجه (OOP)، ونمط هندسة البرمجيات MVC.",
+            "desc_en": "Deep dive into server-side execution, Object-Oriented Programming (OOP) in PHP, and the MVC pattern.",
+            "links": [
+              { "title": "W3Schools: PHP Tutorial", "url": "https://www.w3schools.com/php/" },
+              { "title": "Laracasts: PHP For Beginners Full Series", "url": "https://laracasts.com/series/php-for-beginners-2023-edition" }
+            ]
+          },
+          {
+            "name_ar": "إطار عمل Laravel وقواعد البيانات",
+            "name_en": "Laravel Framework & MySQL",
+            "required": true,
+            "desc_ar": "إتقان نظام التوجيه، ومحرك البيانات Eloquent ORM، والتهجير (Migrations)، وإدارة علاقات الجداول في MySQL.",
+            "desc_en": "Master routing, Eloquent ORM, Migrations, and database relationships inside MySQL schemas.",
+            "links": [
+              { "title": "W3Schools: SQL/MySQL Database", "url": "https://www.w3schools.com/sql/" },
+              { "title": "Laravel Documentation", "url": "https://laravel.com/docs" }
+            ]
+          },
+          {
+            "name_ar": "تصميم واختبار واجهات برمجة التطبيقات",
+            "name_en": "API Design & Testing (Postman)",
+            "required": true,
+            "desc_ar": "تصميم نقاط نهاية JSON واضحة واختبار استجابات الخادم باستخدام أدوات مثل Postman.",
+            "desc_en": "Design clear JSON endpoints and test your backend responses using Postman.",
+            "links": [
+              { "title": "Postman Official Learning Center", "url": "https://learning.postman.com/docs/getting-started/introduction/" },
+              { "title": "freeCodeCamp: Postman API Course (YouTube)", "url": "https://www.youtube.com/watch?v=FjgYtLPrjX4" }
+            ]
+          }
+        ]
+      },
+      {
+        "phase": 4,
+        "title_ar": "الأمان والتحكم بالإصدارات",
+        "title_en": "Integration, Security & Version Control",
+        "skills": [
+          {
+            "name_ar": "أساسيات أمان الويب (CORS, XSS)",
+            "name_en": "Web Security Fundamentals",
+            "required": true,
+            "desc_ar": "فهم ومنع الثغرات الشائعة في الويب مثل (XSS) وتكوين سياسات مشاركة الموارد عبر الأصول (CORS).",
+            "desc_en": "Understand and prevent common web vulnerabilities like XSS and configure strict CORS policies.",
+            "links": [
+              { "title": "W3Schools: Cyber Security Intro", "url": "https://www.w3schools.com/cybersecurity/" },
+              { "title": "OWASP Top 10 Security Vulnerabilities", "url": "https://owasp.org/www-project-top-ten/" }
+            ]
+          },
+          {
+            "name_ar": "بناء مصادقة واجهات البرمجة الآمنة",
+            "name_en": "Secure Authentication (Sanctum)",
+            "required": true,
+            "desc_ar": "ربط الواجهة بالخلفية بشكل آمن باستخدام مصادقة حزم Laravel Sanctum والرموز البرمجية.",
+            "desc_en": "Connect your frontend securely using REST APIs protected by stateful Laravel Sanctum API Tokens.",
+            "links": [
+              { "title": "Laravel Sanctum Official Manual", "url": "https://laravel.com/docs/sanctum" },
+              { "title": "Andre Madarang: Laravel Sanctum (YouTube)", "url": "https://www.youtube.com/watch?v=T9qOaxD62K4" }
+            ]
+          },
+          {
+            "name_ar": "التحكم في النسخ عبر Git & GitHub",
+            "name_en": "Version Control with Git",
+            "required": true,
+            "desc_ar": "إتقان تتبع التغييرات في الشيفرة، إنشاء الفروع (Branches)، ورفع وإدارة المشاريع برمجياً.",
+            "desc_en": "Master code versioning, commit staging, managing feature branches, and pushing updates to GitHub.",
+            "links": [
+              { "title": "W3Schools: Git & GitHub Tutorial", "url": "https://www.w3schools.com/git/" },
+              { "title": "Programming with Mosh: Git (YouTube)", "url": "https://www.youtube.com/watch?v=hwVvSnsGhRI" }
+            ]
+          }
+        ]
+      },
+      {
+        "phase": 5,
+        "title_ar": "إدارة الخوادم والنشر",
+        "title_en": "Server Management & Deployment",
+        "skills": [
+          {
+            "name_ar": "أساسيات أوامر لينكس (Linux)",
+            "name_en": "Linux Command Line Basics",
+            "required": false,
+            "desc_ar": "تعلم أوامر الطرفية الأساسية للتنقل وإدارة الملفات وسجلات الأنظمة على خادم ويب حقيقي.",
+            "desc_en": "Learn basic terminal commands to safely navigate, log, and manage files on production remote servers.",
+            "links": [
+              { "title": "W3Schools: Linux Terminal Tutorial", "url": "https://www.w3schools.com/linux/" },
+              { "title": "NetworkChuck: Linux Basics (YouTube)", "url": "https://www.youtube.com/watch?v=sWbUDq4S6Y8" }
+            ]
+          },
+          {
+            "name_ar": "نشر التطبيقات وإدارة الاستضافة",
+            "name_en": "Hosting & Production Deployment",
+            "required": true,
+            "desc_ar": "رفع ونشر تطبيقاتك على شبكة الإنترنت الإنتاجية باستخدام خدمات الاستضافة المختلفة.",
+            "desc_en": "Deploy production applications using traditional configurations or modern cloud stacks.",
+            "links": [
+              { "title": "Laravel Docs: Server Deployment", "url": "https://laravel.com/docs/deployment" },
+              { "title": "Traversy Media: Deploying Web Apps (YouTube)", "url": "https://www.youtube.com/watch?v=m707uN5zQZk" }
+            ]
           }
         ]
       }
@@ -265,6 +501,8 @@
     "title_en": "UI/UX Designer",
     "description_ar": "مسار إبداعي يركز على تصميم الجماليات البصرية وبناء تجارب استخدام مريحة وفعالة للتطبيقات.",
     "description_en": "A creative path focusing on designing visual aesthetics and building comfortable, effective user experiences for applications.",
+    "detailed_desc_ar": "ستتعلم في هذا المسار كيفية إجراء أبحاث المستخدمين، ورسم المخططات الشبكية، وصولاً إلى بناء نماذج تفاعلية عالية الدقة باستخدام Figma.",
+    "detailed_desc_en": "Learn to conduct user research, draw wireframes, and build high-fidelity interactive prototypes using Figma.",
     "steps": [
       {
         "phase": 1,
@@ -274,12 +512,24 @@
           {
             "name_ar": "نظرية الألوان والطباعة",
             "name_en": "Color Theory & Typography",
-            "required": true
+            "required": true,
+            "desc_ar": "فهم سيكولوجية الألوان واختيار الخطوط المناسبة لبناء واجهات جذابة ومريحة للعين.",
+            "desc_en": "Understand color psychology and typography pairing to build aesthetically pleasing interfaces.",
+            "links": [
+              { "title": "Interaction Design: Color Theory", "url": "https://www.interaction-design.org/literature/topics/color-theory" },
+              { "title": "Google Fonts Knowledge Center", "url": "https://fonts.google.com/knowledge" }
+            ]
           },
           {
             "name_ar": "التسلسل الهرمي البصري",
             "name_en": "Visual Hierarchy",
-            "required": true
+            "required": true,
+            "desc_ar": "توجيه عين المستخدم للعناصر الأهم في الشاشة بناءً على الحجم، اللون، والتباين.",
+            "desc_en": "Guide the user's eye to the most important elements based on size, color, and contrast.",
+            "links": [
+              { "title": "NNGroup: Visual Hierarchy", "url": "https://www.nngroup.com/articles/visual-hierarchy-ux-definition/" },
+              { "title": "DesignCourse: UI Hierarchy (YouTube)", "url": "https://www.youtube.com/watch?v=XWpQ2L72mU8" }
+            ]
           }
         ]
       },
@@ -291,29 +541,53 @@
           {
             "name_ar": "التخطيط الشبكي (Wireframing)",
             "name_en": "Wireframing",
-            "required": true
+            "required": true,
+            "desc_ar": "بناء الهيكل الأولي وتخطيط الشاشات قبل البدء بالتصميم النهائي لضمان تجربة مستخدم سلسة.",
+            "desc_en": "Build the low-fidelity layout of screens before moving to final designs to ensure a smooth UX.",
+            "links": [
+              { "title": "Balsamiq Wireframing Academy", "url": "https://balsamiq.com/learn/articles/what-are-wireframes/" },
+              { "title": "CareerFoundry: UX Basics Guide", "url": "https://careerfoundry.com/en/blog/ux-design/what-is-a-wireframe/" }
+            ]
           },
           {
             "name_ar": "أبحاث المستخدمين",
             "name_en": "User Research",
-            "required": true
+            "required": true,
+            "desc_ar": "تحليل سلوكيات واحتياجات المستخدمين لضمان أن التطبيق يحل مشاكلهم الفعلية.",
+            "desc_en": "Analyze user behaviors and needs to ensure the application solves real problems.",
+            "links": [
+              { "title": "NNGroup: UX Research Cheat Sheet", "url": "https://www.nngroup.com/articles/ux-research-cheat-sheet/" },
+              { "title": "Coursera: Introduction to UX Research", "url": "https://www.coursera.org/learn/ux-research" }
+            ]
           }
         ]
       },
       {
         "phase": 3,
-        "title_ar": "أدوات التصميم",
-        "title_en": "Design Tools",
+        "title_ar": "أدوات التصميم والنماذج",
+        "title_en": "Design Tools & Prototyping",
         "skills": [
           {
-            "name_ar": "Figma",
+            "name_ar": "أداة Figma",
             "name_en": "Figma",
-            "required": true
+            "required": true,
+            "desc_ar": "احتراف استخدام برنامج Figma لتصميم الواجهات والتعاون التقني مع فريق المطورين.",
+            "desc_en": "Master Figma to design interfaces and collaborate seamlessly with the development team.",
+            "links": [
+              { "title": "Figma Official Learning Path", "url": "https://help.figma.com/hc/en-us" },
+              { "title": "freeCodeCamp: Figma Full Course (YouTube)", "url": "https://www.youtube.com/watch?v=HzzxdulFJsA" }
+            ]
           },
           {
-            "name_ar": "تصميم النماذج الأولية (Prototyping)",
+            "name_ar": "تصميم النماذج الأولية",
             "name_en": "Prototyping",
-            "required": true
+            "required": true,
+            "desc_ar": "ربط الشاشات المصممة وجعلها قابلة للنقر لتحاكي التطبيق الحقيقي قبل برمجته.",
+            "desc_en": "Connect designed screens to make them clickable, mimicking a real app before coding begins.",
+            "links": [
+              { "title": "Figma: Guide to Prototyping", "url": "https://help.figma.com/hc/en-us/articles/360040314193-Guide-to-prototyping-in-Figma" },
+              { "title": "DesignCourse: Interactive Prototypes (YouTube)", "url": "https://www.youtube.com/watch?v=l_aGvY7uX2c" }
+            ]
           }
         ]
       }
@@ -329,6 +603,8 @@
     "title_en": "AI & Algorithm Engineer",
     "description_ar": "مسار متقدم يركز على الرياضيات، وهياكل البيانات، وبناء خوارزميات البحث وتعلم الآلة.",
     "description_en": "An advanced path focusing on mathematics, data structures, building search algorithms, and machine learning.",
+    "detailed_desc_ar": "تخصص عميق يبدأ بتأسيس قوي في الرياضيات والإحصاء، وينتقل بك عبر الخوارزميات الدقيقة مثل البحث بالعمق والعرض، للوصول لتدريب نماذج الذكاء الاصطناعي.",
+    "detailed_desc_en": "A deep specialization that starts with strong math foundations, moves through search algorithms, and concludes with training AI models.",
     "steps": [
       {
         "phase": 1,
@@ -338,12 +614,24 @@
           {
             "name_ar": "التفاضل والتكامل والجبر الخطي",
             "name_en": "Calculus & Linear Algebra",
-            "required": true
+            "required": true,
+            "desc_ar": "فهم المصفوفات، المتجهات، وحساب التفاضل كحجر أساس لفهم خوارزميات تعلم الآلة.",
+            "desc_en": "Understand matrices, vectors, and calculus as the cornerstone for machine learning algorithms.",
+            "links": [
+              { "title": "3Blue1Brown: Linear Algebra (YouTube)", "url": "https://www.youtube.com/watch?v=fNk_zzaMoSs" },
+              { "title": "Khan Academy: Calculus 1", "url": "https://www.khanacademy.org/math/calculus-1" }
+            ]
           },
           {
             "name_ar": "الاحتمالات والإحصاء",
             "name_en": "Probability & Statistics",
-            "required": true
+            "required": true,
+            "desc_ar": "تحليل توزيعات البيانات وبناء النماذج الاحتمالية للتنبؤ واتخاذ القرارات الذكية.",
+            "desc_en": "Analyze data distributions and build probabilistic models for intelligent decision making.",
+            "links": [
+              { "title": "Khan Academy: Statistics & Probability", "url": "https://www.khanacademy.org/math/statistics-probability" },
+              { "title": "StatQuest with Josh Starmer (YouTube)", "url": "https://www.youtube.com/user/joshstarmer" }
+            ]
           }
         ]
       },
@@ -355,12 +643,24 @@
           {
             "name_ar": "خوارزميات البحث (BFS, DFS, A*)",
             "name_en": "Search Algorithms (BFS, DFS, A*)",
-            "required": true
+            "required": true,
+            "desc_ar": "التطبيق البرمجي للبحث في الرسوم البيانية والأشجار، وهي أساسيات لحل مسارات الذكاء الاصطناعي.",
+            "desc_en": "Programming graph and tree searches, which are fundamental to AI pathfinding systems.",
+            "links": [
+              { "title": "GeeksforGeeks: Difference between BFS and DFS", "url": "https://www.geeksforgeeks.org/difference-between-bfs-and-dfs/" },
+              { "title": "HackerRank: Graph Algorithms (YouTube)", "url": "https://www.youtube.com/watch?v=zaBhtODEL0w" }
+            ]
           },
           {
             "name_ar": "هياكل البيانات المتقدمة",
             "name_en": "Advanced Data Structures",
-            "required": true
+            "required": true,
+            "desc_ar": "فهم عميق وتطبيق للخرائط (Hash Maps)، وأكوام الذاكرة (Heaps)، والأشجار لتخزين البيانات بسرعة عالية.",
+            "desc_en": "Deep understanding and implementation of Hash Maps, Heaps, and Trees for high-speed data storage.",
+            "links": [
+              { "title": "Coursera: Data Structures Course", "url": "https://www.coursera.org/learn/data-structures" },
+              { "title": "freeCodeCamp: Data Structures Algorithms (YouTube)", "url": "https://www.youtube.com/watch?v=8hly31xKli0" }
+            ]
           }
         ]
       },
@@ -372,16 +672,318 @@
           {
             "name_ar": "برمجة بايثون للبيانات",
             "name_en": "Python for Data",
-            "required": true
+            "required": true,
+            "desc_ar": "إتقان لغة بايثون ومكتباتها العلمية الخاصة بتحليل ومعالجة البيانات مثل Pandas و NumPy.",
+            "desc_en": "Master Python and its scientific libraries for data analysis and manipulation like Pandas and NumPy.",
+            "links": [
+              { "title": "W3Schools: Python Pandas Tutorial", "url": "https://www.w3schools.com/python/pandas/default.asp" },
+              { "title": "freeCodeCamp: Python Data Analysis (YouTube)", "url": "https://www.youtube.com/watch?v=r-uOLxNrNk8" }
+            ]
           },
           {
             "name_ar": "الشبكات العصبية",
             "name_en": "Neural Networks",
-            "required": true
+            "required": true,
+            "desc_ar": "التدرب على تصميم وبناء وتدريب نماذج الشبكات العصبية الاصطناعية لمحاكاة التعلم البشري.",
+            "desc_en": "Practice designing, building, and training artificial neural network models to simulate human learning.",
+            "links": [
+              { "title": "3Blue1Brown: But what is a neural network? (YouTube)", "url": "https://www.youtube.com/watch?v=aircAruvnKk" },
+              { "title": "Coursera: Machine Learning by Andrew Ng", "url": "https://www.coursera.org/specializations/machine-learning-introduction" }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "software-engineer",
+    "category": "software",
+    "level": "beginner",
+    "title_ar": "مهندس برمجيات (مسار عام)",
+    "title_en": "General Software Engineer",
+    "icon": "fa-code",
+    "color": "#4CAF50",
+    "description_ar": "مسار تأسيسي متكامل لتعلم تطوير التطبيقات والأنظمة البرمجية.",
+    "description_en": "A foundational path to learn building applications and software systems.",
+    "detailed_desc_ar": "نقطة انطلاق ممتازة لأي مبرمج، تغطي التفكير المنطقي وهياكل البيانات الأساسية كمدخل لتطوير البرامج.",
+    "detailed_desc_en": "An excellent starting point covering logical thinking and basic data structures as an entry to software development.",
+    "display_order": 20,
+    "steps": [
+      {
+        "phase": 1,
+        "title_ar": "الأساسيات البرمجية",
+        "title_en": "Fundamentals",
+        "skills": [
+          {
+            "name_ar": "منطق البرمجة",
+            "name_en": "Programming logic",
+            "required": true,
+            "desc_ar": "تأسيس التفكير المنطقي وكيفية حل المشكلات قبل كتابة الأكواد.",
+            "desc_en": "Establish logical thinking and problem-solving methodologies before writing code.",
+            "links": [
+              { "title": "Harvard CS50: Introduction to Computer Science", "url": "https://cs50.harvard.edu/x/2023/" },
+              { "title": "freeCodeCamp: Logic Programming (YouTube)", "url": "https://www.youtube.com/watch?v=zOjov-2c0iU" }
+            ]
+          },
+          {
+            "name_ar": "لغة برمجة (Python/JS)",
+            "name_en": "Programming language (Python/JS)",
+            "required": true,
+            "desc_ar": "إتقان كتابة الشيفرة البرمجية الأساسية واختيار لغة برمجة قوية للبدء.",
+            "desc_en": "Master writing core code syntax and picking a solid starting language.",
+            "links": [
+              { "title": "W3Schools: Python Tutorial", "url": "https://www.w3schools.com/python/" },
+              { "title": "Programming with Mosh: Python in 1 Hour (YouTube)", "url": "https://www.youtube.com/watch?v=kqtD5dpn9C8" }
+            ]
+          }
+        ]
+      },
+      {
+        "phase": 2,
+        "title_ar": "هياكل البيانات والخوارزميات",
+        "title_en": "Data Structures & Algorithms",
+        "skills": [
+          {
+            "name_ar": "هياكل البيانات",
+            "name_en": "Data Structures",
+            "required": true,
+            "desc_ar": "طرق تخزين وتنظيم البيانات في ذاكرة الحاسوب لضمان سرعة الوصول.",
+            "desc_en": "Methods to store and organize data in computer memory for optimal access.",
+            "links": [
+              { "title": "GeeksforGeeks: Data Structures", "url": "https://www.geeksforgeeks.org/data-structures/" },
+              { "title": "W3Schools: DSA Tutorial", "url": "https://www.w3schools.com/dsa/" }
+            ]
+          },
+          {
+            "name_ar": "الخوارزميات الأساسية",
+            "name_en": "Basic Algorithms",
+            "required": true,
+            "desc_ar": "إتقان الخوارزميات الأساسية للفرز والبحث وحل المسائل البرمجية.",
+            "desc_en": "Master basic sorting and searching algorithms to solve logic problems.",
+            "links": [
+              { "title": "Khan Academy: Intro to Algorithms", "url": "https://www.khanacademy.org/computing/computer-science/algorithms" },
+              { "title": "freeCodeCamp: Data Structures Algorithms (YouTube)", "url": "https://www.youtube.com/watch?v=8hly31xKli0" }
+            ]
+          }
+        ]
+      },
+      {
+        "phase": 3,
+        "title_ar": "أساسيات تطوير الويب",
+        "title_en": "Web Development Basics",
+        "skills": [
+          {
+            "name_ar": "HTML/CSS/JS",
+            "name_en": "HTML/CSS/JS",
+            "required": true,
+            "desc_ar": "فهم عمل الويب وإنشاء صفحات ويب قياسية متجاوبة.",
+            "desc_en": "Understand web architecture and build standard responsive web pages.",
+            "links": [
+              { "title": "MDN Web Docs: Web Development", "url": "https://developer.mozilla.org/en-US/docs/Learn" },
+              { "title": "W3Schools: Web Development Intro", "url": "https://www.w3schools.com/whatis/" }
+            ]
+          },
+          {
+            "name_ar": "إطار عمل (React/Vue)",
+            "name_en": "Framework (React/Vue)",
+            "required": false,
+            "desc_ar": "الانتقال إلى استخدام إطارات العمل الحديثة لتسهيل بناء واجهات التطبيقات.",
+            "desc_en": "Transition to using modern frameworks to build application interfaces efficiently.",
+            "links": [
+              { "title": "React Official Docs", "url": "https://react.dev/" },
+              { "title": "Vue.js Official Guide", "url": "https://vuejs.org/guide/introduction.html" }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "devops",
+    "category": "software",
+    "level": "intermediate",
+    "title_ar": "مهندس DevOps",
+    "title_en": "DevOps Engineer",
+    "icon": "fa-server",
+    "color": "#2196F3",
+    "description_ar": "مسار لربط التطوير بالتشغيل، وإدارة الخوادم، والأتمتة.",
+    "description_en": "Path to connect development with operations, server management, and automation.",
+    "detailed_desc_ar": "يهدف هذا المسار إلى تسريع دورة حياة تطوير البرمجيات من خلال أتمتة عمليات النشر وإدارة الحاويات والخوادم.",
+    "detailed_desc_en": "This path aims to accelerate the software lifecycle by automating deployments and managing containers.",
+    "display_order": 5,
+    "steps": [
+      {
+        "phase": 1,
+        "title_ar": "أساسيات النظام",
+        "title_en": "System Basics",
+        "skills": [
+          {
+            "name_ar": "أساسيات نظام Linux",
+            "name_en": "Linux basics",
+            "required": true,
+            "desc_ar": "إدارة الخوادم وإعطاء الصلاحيات بكفاءة عبر موجه الأوامر.",
+            "desc_en": "Manage servers and permissions efficiently via the command line interface.",
+            "links": [
+              { "title": "W3Schools: Linux Tutorial", "url": "https://www.w3schools.com/linux/" },
+              { "title": "NetworkChuck: Linux for Hackers (YouTube)", "url": "https://www.youtube.com/watch?v=VRoBEFtoH0w" }
+            ]
+          },
+          {
+            "name_ar": "أساسيات الشبكات",
+            "name_en": "Networking basics",
+            "required": true,
+            "desc_ar": "فهم بروتوكولات الإنترنت (TCP/IP, DNS) وكيفية تواصل الخوادم.",
+            "desc_en": "Understand internet protocols (TCP/IP, DNS) and server communication.",
+            "links": [
+              { "title": "IBM: Networking Overview", "url": "https://www.ibm.com/topics/networking" },
+              { "title": "NetworkChuck: Free CCNA Course (YouTube)", "url": "https://www.youtube.com/watch?v=H8W9oMNSuCE" }
+            ]
+          }
+        ]
+      },
+      {
+        "phase": 2,
+        "title_ar": "الحاويات وبيئات العمل",
+        "title_en": "Containers",
+        "skills": [
+          {
+            "name_ar": "أداة Docker",
+            "name_en": "Docker",
+            "required": true,
+            "desc_ar": "حزم التطبيقات داخل حاويات مخصصة لتعمل بثبات في أي بيئة خادم.",
+            "desc_en": "Package applications in containers to run reliably across any server environment.",
+            "links": [
+              { "title": "Docker Official Getting Started", "url": "https://docs.docker.com/get-started/" },
+              { "title": "TechWorld with Nana: Docker Course (YouTube)", "url": "https://www.youtube.com/watch?v=3c-iZaI9f1c" }
+            ]
+          },
+          {
+            "name_ar": "أداة Docker Compose",
+            "name_en": "Docker Compose",
+            "required": false,
+            "desc_ar": "برمجة أداة تشغيل وإدارة خدمات متعددة الحاويات بشكل متزامن.",
+            "desc_en": "Configure and manage multi-container services synchronously.",
+            "links": [
+              { "title": "Docker Compose Documentation", "url": "https://docs.docker.com/compose/" },
+              { "title": "freeCodeCamp: Docker Compose (YouTube)", "url": "https://www.youtube.com/watch?v=fqpzja6IljY" }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cybersecurity_specialist",
+    "category": "security",
+    "level": "beginner",
+    "title_ar": "أخصائي أمن سيبراني",
+    "title_en": "Cybersecurity Specialist",
+    "icon": "fa-shield-halved",
+    "color": "#E53935",
+    "description_ar": "مسار مخصص لحماية الأنظمة والشبكات والبيانات من الهجمات الرقمية واكتشاف الثغرات.",
+    "description_en": "A path dedicated to protecting systems, networks, and data from digital attacks and discovering vulnerabilities.",
+    "detailed_desc_ar": "مسار يعلمك كيفية الهجوم والدفاع، بداية من التشفير وتقييم المخاطر، وحتى التحليل الجنائي الرقمي واختبار الاختراق الأخلاقي للأنظمة.",
+    "detailed_desc_en": "A comprehensive path covering offensive and defensive strategies, from cryptography to ethical penetration testing.",
+    "display_order": 18,
+    "steps": [
+      {
+        "phase": 1,
+        "title_ar": "الأساسيات والشبكات",
+        "title_en": "IT Fundamentals",
+        "skills": [
+          {
+            "name_ar": "أساسيات الشبكات والأمان",
+            "name_en": "Networking Basics",
+            "required": true,
+            "desc_ar": "تحليل حركة المرور، طبقات الشبكة (OSI Model)، وجدار الحماية.",
+            "desc_en": "Analyze network traffic, the OSI Model layers, and firewalls.",
+            "links": [
+              { "title": "Cisco: Networking Basics Guide", "url": "https://www.cisco.com/c/en/us/solutions/small-business/resource-center/networking/networking-basics.html" },
+              { "title": "Professor Messer: Network+ Course", "url": "https://www.professormesser.com/network-plus/n10-008/n10-008-video/n10-008-training-course/" }
+            ]
+          },
+          {
+            "name_ar": "إدارة نظام لينكس",
+            "name_en": "Linux Administration",
+            "required": true,
+            "desc_ar": "استخدام أنظمة لينكس كبيئة عمل رئيسية لأدوات أمن المعلومات والاختراق.",
+            "desc_en": "Utilize Linux operating systems as the core environment for infosec tools.",
+            "links": [
+              { "title": "W3Schools: Linux Tutorial", "url": "https://www.w3schools.com/linux/" },
+              { "title": "HackerSploit: Linux for Ethical Hackers (YouTube)", "url": "https://www.youtube.com/watch?v=lZAoFs75_cs" }
+            ]
+          }
+        ]
+      },
+      {
+        "phase": 2,
+        "title_ar": "مبادئ ومفاهيم الأمن",
+        "title_en": "Security Principles",
+        "skills": [
+          {
+            "name_ar": "التشفير",
+            "name_en": "Cryptography",
+            "required": true,
+            "desc_ar": "تعمية وحماية البيانات وفهم مفاتيح التشفير (التناظري وغير التناظري).",
+            "desc_en": "Obscure and protect data understanding symmetric and asymmetric key models.",
+            "links": [
+              { "title": "W3Schools: Cyber Security Cryptography", "url": "https://www.w3schools.com/cybersecurity/cybersecurity_cryptography.php" },
+              { "title": "CrashCourse: Cryptography (YouTube)", "url": "https://www.youtube.com/watch?v=jhXCTbFnK8o" }
+            ]
+          },
+          {
+            "name_ar": "إدارة المخاطر والتهديدات الشائعة",
+            "name_en": "Risk Management & Threats",
+            "required": true,
+            "desc_ar": "تقييم الثغرات وتحليل تأثيرها، وفهم أبرز التهديدات المستمرة والمتقدمة (APTs).",
+            "desc_en": "Evaluate vulnerabilities, analyze impact, and understand advanced persistent threats.",
+            "links": [
+              { "title": "OWASP Threat Modeling", "url": "https://owasp.org/www-community/Threat_Modeling" },
+              { "title": "IBM: Cybersecurity Overview", "url": "https://www.ibm.com/topics/cybersecurity" }
+            ]
+          }
+        ]
+      },
+      {
+        "phase": 3,
+        "title_ar": "الأمن الهجومي والدفاعي",
+        "title_en": "Offensive & Defensive Security",
+        "skills": [
+          {
+            "name_ar": "اختبار الاختراق",
+            "name_en": "Penetration Testing",
+            "required": true,
+            "desc_ar": "تطبيق هجمات مصرح بها قانونياً على شبكات وأنظمة لكشف ضعفها قبل استغلاله.",
+            "desc_en": "Execute legally authorized real-world attacks to expose systemic weaknesses.",
+            "links": [
+              { "title": "TryHackMe: Pentesting Basics", "url": "https://tryhackme.com/path/outline/pentesting" },
+              { "title": "HackTheBox Academy", "url": "https://academy.hackthebox.com/" }
+            ]
+          },
+          {
+            "name_ar": "القرصنة الأخلاقية",
+            "name_en": "Ethical Hacking",
+            "required": true,
+            "desc_ar": "استخدام برمجيات وطرق المخترقين لأهداف دفاعية وعلاجية.",
+            "desc_en": "Utilize hacker strategies and software for defensive and remedial purposes.",
+            "links": [
+              { "title": "EC-Council: What is Ethical Hacking?", "url": "https://www.eccouncil.org/ethical-hacking/" },
+              { "title": "freeCodeCamp: Ethical Hacking Full Course (YouTube)", "url": "https://www.youtube.com/watch?v=3Kq1MIfTWCE" }
+            ]
+          },
+          {
+            "name_ar": "التحليل الجنائي الرقمي",
+            "name_en": "Digital Forensics",
+            "required": false,
+            "desc_ar": "جمع الأدلة الرقمية وتحليل الحوادث لمعرفة كيفية وقوع الاختراق.",
+            "desc_en": "Collect digital evidence and analyze incidents to trace security breaches.",
+            "links": [
+              { "title": "CISA: Digital Forensics Guide", "url": "https://www.cisa.gov/uscert/ics/tips/Cyber-Forensics" },
+              { "title": "SANS Institute", "url": "https://www.sans.org/digital-forensics-incident-response/" }
+            ]
           }
         ]
       }
     ]
   }
 ]
-
