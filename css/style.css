@@ -1315,3 +1315,71 @@
      left: 12px !important;
      right: auto !important;
  }
+
+ /* --- Fix Icons inside Skill Boxes --- */
+ .rn-skill-box i {
+     color: inherit !important;
+     /* Forces all icons to match the text perfectly */
+     opacity: 0.85 !important;
+ }
+
+ /* --- Dark Mode Sidebar (Offcanvas) Fixes --- */
+ body.dark-mode .offcanvas {
+     background-color: #1e293b !important;
+     /* Beautiful dark slate background */
+     color: #f8fafc !important;
+     /* Crisp white text */
+ }
+
+ /* Make the title and link text white */
+ body.dark-mode #skillSidebarTitle,
+ body.dark-mode #skillSidebarTitle span,
+ body.dark-mode .skill-link-btn span {
+     color: #f8fafc !important;
+ }
+
+ /* --- Fix Sidebar Labels (Overview / Links) in Dark Mode --- */
+ body.dark-mode #sidebarDescLabel,
+ body.dark-mode #sidebarLinksLabel {
+     color: #94a3b8 !important;
+     /* A bright, legible slate gray */
+ }
+
+ /* Invert the close 'X' button so it's white instead of black */
+ body.dark-mode .offcanvas .btn-close {
+     filter: invert(1) grayscale(100%) brightness(200%);
+ }
+
+ /* Fix the learning resource buttons inside the sidebar */
+ body.dark-mode .skill-link-btn {
+     background-color: #334155 !important;
+     border-color: #475569 !important;
+ }
+
+ body.dark-mode .skill-link-btn:hover {
+     background-color: #475569 !important;
+ }
+
+ /* --- Mobile Sidebar Fixes --- */
+ @media (max-width: 768px) {
+     #skillSidebar {
+         width: 80vw !important;
+         /* Keeps 15% of the screen visible for tap-to-close */
+     }
+
+     /* Add beautiful rounded corners to the inside edge on mobile */
+     html[dir="ltr"] #skillSidebar {
+         border-radius: 24px 0 0 24px !important;
+     }
+
+     /* Flip the corners automatically when switching to Arabic */
+     html[dir="rtl"] #skillSidebar {
+         border-radius: 0 24px 24px 0 !important;
+     }
+ }
+
+ /* إصلاح لون نص الوصف الباهت أو الاحتياطي في الوضع الداكن */
+ body.dark-mode .offcanvas .text-muted {
+     color: #94a3b8 !important;
+     /* لون رمادي فاتح مريح للعين وواضح جداً على الخلفية الداكنة */
+ }
